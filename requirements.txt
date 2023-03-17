@@ -1,0 +1,11 @@
+pandas
+Pillow
+pydantic
+tenacity
+langchain
+fastapi
+boto3
+llama_index
+torch==1.13.1+cu117
+transformers
+diffusers

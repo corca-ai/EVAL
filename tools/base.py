@@ -13,7 +13,9 @@ def tool(name, description):
 
 class BaseToolSet:
     def to_tools(cls) -> list[BaseTool]:
-        method_tools = [getattr(cls, m) for m in dir(cls) if m.is_tool]
+        method_tools = [
+            getattr(cls, m) for m in dir(cls) if hasattr(getattr(cls, m), "is_tool")
+        ]
         return [
             Tool(name=m.name, description=m.description, func=m) for m in method_tools
         ]

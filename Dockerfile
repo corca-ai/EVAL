@@ -3,12 +3,16 @@ WORKDIR /app/
 
 RUN \
   apt-get update && \
-  apt-get install -y python3 python3-pip
+  apt-get install -y python3.10 python3-pip curl && \
+  curl -sSL https://install.python-poetry.org | python3 -
 RUN apt-get install uvicorn -y
 
-RUN pip install --upgrade pip
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+ENV PATH "/root/.local/bin:$PATH"
+
+COPY pyproject.toml .
+COPY poetry.lock .
+
+RUN poetry install
 
 COPY . .
 

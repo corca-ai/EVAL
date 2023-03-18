@@ -1,22 +1,12 @@
-from langchain.chains.conversation.memory import ConversationBufferMemory
-
 from utils import prompts
 from env import settings
-from vfm import (
-    ImageEditing,
-    InstructPix2Pix,
-    Text2Image,
-    ImageCaptioning,
-    VisualQuestionAnswering,
-)
 
 import requests
 
 from llama_index.readers.database import DatabaseReader
 from llama_index import GPTSimpleVectorIndex
 
-
-memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+from langchain.memory.chat_memory import BaseChatMemory
 
 
 class RequestsGet:
@@ -79,6 +69,9 @@ class WineDB:
 
 
 class ExitConversation:
+    def __init__(self, memory: BaseChatMemory):
+        self.memory = memory
+
     @prompts(
         name="exit_conversation",
         description="A tool to exit the conversation. "
@@ -87,19 +80,5 @@ class ExitConversation:
     )
     def inference(self, query: str) -> str:
         """Run the tool."""
-        memory.chat_memory.messages = []
+        self.memory.chat_memory.messages = []
         return ""
-
-
-IMAGE_MODEL = ImageCaptioning("cuda:3")
-
-
-AWESOME_MODEL = {
-    "RequestsGet": RequestsGet(),
-    "WineDB": WineDB(),
-    "ExitConversation": ExitConversation(),
-    "Text2Image": Text2Image("cuda:3"),
-    "ImageEditing": ImageEditing("cuda:3"),
-    "InstructPix2Pix": InstructPix2Pix("cuda:3"),
-    "VisualQuestionAnswering": VisualQuestionAnswering("cuda:3"),
-}

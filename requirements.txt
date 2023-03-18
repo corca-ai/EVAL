@@ -6,6 +6,10 @@ langchain
 fastapi
 boto3
 llama_index
-torch==1.13.1+cu117
+torch
 transformers
 diffusers
+python_dotenv
+google-search-results
+psycopg2-binary
+wikipedia

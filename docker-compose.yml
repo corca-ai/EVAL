@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  awesomegpt:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    env_file:
+      - .env
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["3"] # You can choose which GPU to use
+              capabilities: [gpu]

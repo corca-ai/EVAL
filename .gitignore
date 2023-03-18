@@ -4,4 +4,6 @@ __pycache__/
 .env
 
 image/
+audio/
+video/
 dataframe/

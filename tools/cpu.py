@@ -110,18 +110,15 @@ class WineDB(BaseToolSet):
 
 
 class ExitConversation(BaseToolSet):
-    def __init__(self, memory: BaseChatMemory):
-        self.memory = memory
-
     @tool(
         name="exit_conversation",
         description="A tool to exit the conversation. "
         "Use this when you want to end the conversation. "
-        "Input should be a user's query."
+        "Input should be a user's query and user's session."
         "The output will be a message that the conversation is over.",
     )
-    def inference(self, query: str) -> str:
+    def inference(self, query: str, session: str) -> str:
         """Run the tool."""
-        self.memory.clear()
+        # session.clear() # TODO
 
         return f"My original question was: {query}"

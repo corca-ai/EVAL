@@ -1,16 +1,53 @@
-from typing import List, TypedDict
+from typing import Dict, List, TypedDict
 import re
 
 from fastapi import FastAPI
 from pydantic import BaseModel
 from s3 import upload
+from env import settings
 
 from prompts.error import ERROR_PROMPT
-from agent import AgentFactory
-
+from agent import AgentBuilder
+from tools.base import BaseToolSet
+from tools.cpu import (
+    Terminal,
+    RequestsGet,
+    WineDB,
+    ExitConversation,
+)
+from tools.gpu import (
+    ImageEditing,
+    InstructPix2Pix,
+    Text2Image,
+    VisualQuestionAnswering,
+)
+from handlers.base import BaseHandler, FileType
+from handlers.image import ImageCaptioning
+from handlers.dataframe import CsvToDataframe
 
 app = FastAPI()
-agent, handler = AgentFactory.get_agent_and_handler()
+
+toolsets: List[BaseToolSet] = [
+    Terminal(),
+    RequestsGet(),
+    ExitConversation(),
+    Text2Image("cuda"),
+    ImageEditing("cuda"),
+    InstructPix2Pix("cuda"),
+    VisualQuestionAnswering("cuda"),
+]
+
+handlers: Dict[FileType, BaseHandler] = {
+    FileType.IMAGE: ImageCaptioning("cuda"),
+    FileType.DATAFRAME: CsvToDataframe(),
+}
+
+if settings["WINEDB_HOST"] and settings["WINEDB_PASSWORD"]:
+    toolsets.append(WineDB())
+
+agent, handler = AgentBuilder.get_agent_and_handler(
+    toolsets=toolsets, handlers=handlers
+)
 
 
 class Request(BaseModel):

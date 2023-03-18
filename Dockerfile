@@ -19,7 +19,6 @@ COPY poetry.lock .
 RUN poetry env use 3.10
 RUN poetry install --with tools
 
-
 COPY . .
 
 ENTRYPOINT ["sleep", "infinity"]

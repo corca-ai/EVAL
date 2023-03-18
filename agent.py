@@ -10,6 +10,7 @@ from langchain.chains.conversation.memory import ConversationBufferMemory
 from utils import AWESOMEGPT_PREFIX, AWESOMEGPT_SUFFIX
 
 from tools.cpu import (
+    Terminal,
     RequestsGet,
     WineDB,
     ExitConversation,
@@ -29,7 +30,7 @@ def get_agent() -> Tuple[AgentExecutor, Handler]:
     print("Initializing AwesomeGPT")
     llm = ChatOpenAI(temperature=0)
 
-    tool_names = ["python_repl", "terminal", "wikipedia"]
+    tool_names = ["python_repl", "wikipedia"]
 
     if settings["SERPAPI_API_KEY"]:
         tool_names.append("serpapi")
@@ -40,6 +41,7 @@ def get_agent() -> Tuple[AgentExecutor, Handler]:
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
     models = {
+        "Terminal": Terminal(),
         "RequestsGet": RequestsGet(),
         "WineDB": WineDB(),
         "ExitConversation": ExitConversation(memory),

@@ -8,6 +8,46 @@ from llama_index import GPTSimpleVectorIndex
 
 from langchain.memory.chat_memory import BaseChatMemory
 
+"""Wrapper around subprocess to run commands."""
+import subprocess
+from typing import List, Union
+
+
+class Terminal:
+    """Executes bash commands and returns the output."""
+
+    def __init__(self, strip_newlines: bool = False, return_err_output: bool = False):
+        """Initialize with stripping newlines."""
+        self.strip_newlines = strip_newlines
+        self.return_err_output = return_err_output
+
+    @prompts(
+        name="Terminal",
+        description="Executes commands in a terminal."
+        "Input should be valid commands, "
+        "and the output will be any output from running that command. This result should always be wrapped in a code block.",
+    )
+    def inference(self, commands: Union[str, List[str]]) -> str:
+        """Run commands and return final output."""
+        if isinstance(commands, str):
+            commands = [commands]
+        commands = ";".join(commands)
+        try:
+            output = subprocess.run(
+                commands,
+                shell=True,
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+            ).stdout.decode()
+        except Exception as e:
+            if self.return_err_output:
+                return e.stdout.decode()
+            return str(e)
+        if self.strip_newlines:
+            output = output.strip()
+        return output
+
 
 class RequestsGet:
     @prompts(
@@ -81,5 +121,6 @@ class ExitConversation:
     )
     def inference(self, query: str) -> str:
         """Run the tool."""
-        self.memory.chat_memory.messages = []
+        self.memory.clear()
+
         return f"My original question was: {query}"

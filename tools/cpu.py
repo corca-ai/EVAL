@@ -1,4 +1,3 @@
-from utils import prompts
 from env import settings
 
 import requests
@@ -12,8 +11,10 @@ from langchain.memory.chat_memory import BaseChatMemory
 import subprocess
 from typing import List, Union
 
+from .base import tool, BaseToolSet
 
-class Terminal:
+
+class Terminal(BaseToolSet):
     """Executes bash commands and returns the output."""
 
     def __init__(self, strip_newlines: bool = False, return_err_output: bool = False):
@@ -21,7 +22,7 @@ class Terminal:
         self.strip_newlines = strip_newlines
         self.return_err_output = return_err_output
 
-    @prompts(
+    @tool(
         name="Terminal",
         description="Executes commands in a terminal."
         "Input should be valid commands, "
@@ -49,8 +50,8 @@ class Terminal:
         return output
 
 
-class RequestsGet:
-    @prompts(
+class RequestsGet(BaseToolSet):
+    @tool(
         name="requests_get",
         description="A portal to the internet. "
         "Use this when you need to get specific content from a website."
@@ -66,7 +67,7 @@ class RequestsGet:
         return text
 
 
-class WineDB:
+class WineDB(BaseToolSet):
     def __init__(self):
         db = DatabaseReader(
             scheme="postgresql",  # Database Scheme
@@ -87,7 +88,7 @@ class WineDB:
         documents = db.load_data(query=query)
         self.index = GPTSimpleVectorIndex(documents)
 
-    @prompts(
+    @tool(
         name="Wine Recommendataion",
         description="A tool to recommend wines based on a user's input. "
         "Inputs are necessary factors for wine recommendations, such as the user's mood today, side dishes to eat with wine, people to drink wine with, what things you want to do, the scent and taste of their favorite wine."
@@ -108,11 +109,11 @@ class WineDB:
         return results.response + "\n\n" + wine
 
 
-class ExitConversation:
+class ExitConversation(BaseToolSet):
     def __init__(self, memory: BaseChatMemory):
         self.memory = memory
 
-    @prompts(
+    @tool(
         name="exit_conversation",
         description="A tool to exit the conversation. "
         "Use this when you want to end the conversation. "

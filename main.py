@@ -5,12 +5,12 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from s3 import upload
 
-from utils import ERROR_PROMPT
-from agent import get_agent
+from prompts.error import ERROR_PROMPT
+from agent import AgentFactory
 
 
 app = FastAPI()
-agent, handler = get_agent()
+agent, handler = AgentFactory.get_agent_and_handler()
 
 
 class Request(BaseModel):
@@ -42,7 +42,6 @@ async def command(request: Request) -> Response:
     print("======>Previous memory:\n %s" % agent.memory)
 
     promptedQuery = ""
-    import time
 
     for i, file in enumerate(files):
         promptedQuery += handler.handle(i + 1, file)

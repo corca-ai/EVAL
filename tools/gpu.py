@@ -4,7 +4,7 @@ import uuid
 from PIL import Image
 import numpy as np
 
-from utils import prompts, get_new_image_name
+from utils import get_new_image_name
 
 from transformers import (
     CLIPSegProcessor,
@@ -23,8 +23,10 @@ from diffusers import (
 )
 from diffusers import EulerAncestralDiscreteScheduler
 
+from .base import tool, BaseToolSet
 
-class MaskFormer:
+
+class MaskFormer(BaseToolSet):
     def __init__(self, device):
         print("Initializing MaskFormer to %s" % device)
         self.device = device
@@ -60,7 +62,7 @@ class MaskFormer:
         return image_mask.resize(original_image.size)
 
 
-class ImageEditing:
+class ImageEditing(BaseToolSet):
     def __init__(self, device):
         print("Initializing ImageEditing to %s" % device)
         self.device = device
@@ -73,7 +75,7 @@ class ImageEditing:
             torch_dtype=self.torch_dtype,
         ).to(device)
 
-    @prompts(
+    @tool(
         name="Remove Something From The Photo",
         description="useful when you want to remove and object or something from the photo "
         "from its description or location. "
@@ -84,7 +86,7 @@ class ImageEditing:
         image_path, to_be_removed_txt = inputs.split(",")
         return self.inference_replace(f"{image_path},{to_be_removed_txt},background")
 
-    @prompts(
+    @tool(
         name="Replace Something From The Photo",
         description="useful when you want to replace an object from the object description or "
         "location with another object from its description. "
@@ -113,7 +115,7 @@ class ImageEditing:
         return updated_image_path
 
 
-class InstructPix2Pix:
+class InstructPix2Pix(BaseToolSet):
     def __init__(self, device):
         print("Initializing InstructPix2Pix to %s" % device)
         self.device = device
@@ -127,7 +129,7 @@ class InstructPix2Pix:
             self.pipe.scheduler.config
         )
 
-    @prompts(
+    @tool(
         name="Instruct Image Using Text",
         description="useful when you want to the style of the image to be like the text. "
         "like: make it look like a painting. or make it like a robot. "
@@ -151,7 +153,7 @@ class InstructPix2Pix:
         return updated_image_path
 
 
-class Text2Image:
+class Text2Image(BaseToolSet):
     def __init__(self, device):
         print("Initializing Text2Image to %s" % device)
         self.device = device
@@ -166,7 +168,7 @@ class Text2Image:
             "fewer digits, cropped, worst quality, low quality"
         )
 
-    @prompts(
+    @tool(
         name="Generate Image From User Input Text",
         description="useful when you want to generate an image from a user input text and save it to a file. "
         "like: generate an image of an object or something, or generate an image that includes some objects. "
@@ -183,36 +185,7 @@ class Text2Image:
         return image_filename
 
 
-class ImageCaptioning:
-    def __init__(self, device):
-        print("Initializing ImageCaptioning to %s" % device)
-        self.device = device
-        self.torch_dtype = torch.float16 if "cuda" in device else torch.float32
-        self.processor = BlipProcessor.from_pretrained(
-            "Salesforce/blip-image-captioning-base"
-        )
-        self.model = BlipForConditionalGeneration.from_pretrained(
-            "Salesforce/blip-image-captioning-base", torch_dtype=self.torch_dtype
-        ).to(self.device)
-
-    @prompts(
-        name="Get Photo Description",
-        description="useful when you want to know what is inside the photo. receives image_path as input. "
-        "The input to this tool should be a string, representing the image_path. ",
-    )
-    def inference(self, image_path):
-        inputs = self.processor(Image.open(image_path), return_tensors="pt").to(
-            self.device, self.torch_dtype
-        )
-        out = self.model.generate(**inputs)
-        captions = self.processor.decode(out[0], skip_special_tokens=True)
-        print(
-            f"\nProcessed ImageCaptioning, Input Image: {image_path}, Output Text: {captions}"
-        )
-        return captions
-
-
-class VisualQuestionAnswering:
+class VisualQuestionAnswering(BaseToolSet):
     def __init__(self, device):
         print("Initializing VisualQuestionAnswering to %s" % device)
         self.torch_dtype = torch.float16 if "cuda" in device else torch.float32
@@ -222,7 +195,7 @@ class VisualQuestionAnswering:
             "Salesforce/blip-vqa-base", torch_dtype=self.torch_dtype
         ).to(self.device)
 
-    @prompts(
+    @tool(
         name="Answer Question About The Image",
         description="useful when you need an answer for a question based on an image. "
         "like: what is the background color of the last image, how many cats in this figure, what is in this figure. "

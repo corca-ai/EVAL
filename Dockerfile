@@ -9,7 +9,6 @@ RUN \
   add-apt-repository ppa:deadsnakes/ppa && \
   apt-get install -y python3.10 python3-pip curl && \
   curl -sSL https://install.python-poetry.org | python3 -
-RUN apt-get install uvicorn -y
 
 ENV PATH "/root/.local/bin:$PATH"
 
@@ -21,5 +20,4 @@ RUN poetry install --with tools
 
 COPY . .
 
-ENTRYPOINT ["sleep", "infinity"]
-# ENTRYPOINT ["python3", "-m", "uvicorn", "main:app", "--reload", "--host=0.0.0.0", "--port=8000"]
+ENTRYPOINT ["poetry", "run", "python3", "-m", "uvicorn", "main:app", "--reload", "--host=0.0.0.0", "--port=8000"]

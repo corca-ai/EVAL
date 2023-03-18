@@ -18,6 +18,9 @@ llama-index = "^0.4.29"
 python-dotenv = "^1.0.0"
 torch = "^2.0.0"
 pillow = "^9.4.0"
+boto3 = "^1.26.94"
+uvicorn = "^0.21.1"
+accelerate = "^0.17.1"
 
 [tool.poetry.group.tools]
 optional = true

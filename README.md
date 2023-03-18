@@ -1,4 +1,14 @@
-# Usage
+# AwesomeGPT
+
+AwesomeGPT can understand and generate data formats for text, image, dataframe, audio (TODO), video (TODO). AwesomeGPT must be run inside a container that is only available to it, and it can build your container environment directly through Terminal Tools.
+
+## Tools
+
+## Usage
+
+```
+docker-compose up --build -d awesomegpt
+```
 
 ### S3
 

@@ -1,6 +1,8 @@
 FROM nvidia/cuda:11.7.0-runtime-ubuntu20.04
 WORKDIR /app/
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN \
   apt-get update && \
   apt-get install -y python3.10 python3-pip curl && \
@@ -12,7 +14,7 @@ ENV PATH "/root/.local/bin:$PATH"
 COPY pyproject.toml .
 COPY poetry.lock .
 
-RUN poetry install
+RUN poetry install --with tools
 
 COPY . .
 

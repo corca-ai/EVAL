@@ -76,9 +76,10 @@ class ExitConversation:
         name="exit_conversation",
         description="A tool to exit the conversation. "
         "Use this when you want to end the conversation. "
+        "Input should be a user's query."
         "The output will be a message that the conversation is over.",
     )
     def inference(self, query: str) -> str:
         """Run the tool."""
         self.memory.chat_memory.messages = []
-        return ""
+        return f"My original question was: {query}"

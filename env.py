@@ -12,6 +12,10 @@ class DotEnv(TypedDict):
     AWS_S3_BUCKET: str
     WINEDB_HOST: str
     WINEDB_PASSWORD: str
+    OPENAI_API_KEY: str
+    BING_SEARCH_URL: str
+    BING_SUBSCRIPTION_KEY: str
+    SERPAPI_API_KEY: str
 
 
 settings: DotEnv = {
@@ -21,4 +25,8 @@ settings: DotEnv = {
     "AWS_S3_BUCKET": os.getenv("AWS_S3_BUCKET"),
     "WINEDB_HOST": os.getenv("WINEDB_HOST"),
     "WINEDB_PASSWORD": os.getenv("WINEDB_PASSWORD"),
+    "OPENAI_API_KEY": os.getenv("OPENAI_API_KEY"),
+    "BING_SEARCH_URL": os.getenv("BING_SEARCH_URL"),
+    "BING_SUBSCRIPTION_KEY": os.getenv("BING_SUBSCRIPTION_KEY"),
+    "SERPAPI_API_KEY": os.getenv("SERPAPI_API_KEY"),
 }

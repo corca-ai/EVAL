@@ -22,17 +22,21 @@ from tools.gpu import (
     VisualQuestionAnswering,
 )
 from handler import Handler, FileType
+from env import settings
 
 
 def get_agent() -> Tuple[AgentExecutor, Handler]:
     print("Initializing AwesomeGPT")
     llm = ChatOpenAI(temperature=0)
-    tools = [
-        *load_tools(
-            ["python_repl", "terminal", "serpapi", "wikipedia", "bing-search"],
-            llm=llm,
-        ),
-    ]
+
+    tool_names = ["python_repl", "terminal", "wikipedia"]
+
+    if settings["SERPAPI_API_KEY"]:
+        tool_names.append("serpapi")
+    if settings["BING_SEARCH_URL"] and settings["BING_SUBSCRIPTION_KEY"]:
+        tool_names.append("bing-search")
+    tools = [*load_tools(tool_names, llm=llm)]
+
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
     models = {

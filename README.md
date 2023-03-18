@@ -1,13 +1,26 @@
 # AwesomeGPT
 
-AwesomeGPT can understand and generate data formats for text, image, dataframe, audio (TODO), video (TODO). AwesomeGPT must be run inside a container that is only available to it, and it can build your container environment directly through Terminal Tools.
-
-## Tools
+Everything you can do with your computer is possible through AwesomeGPT. It can understand and generate data formats for text, image, dataframe, audio (TODO), video (TODO). It must be run inside a container that is only available to it, and it can build your container environment directly through Terminal Tools.
 
 ## Usage
 
+1. environments settings
+2. S3 Settings
+3. Execute `docker-compose up --build -d awesomegpt`
+
+### Environment
+
+You must need this environments.
+
 ```
-docker-compose up --build -d awesomegpt
+OPENAI_API_KEY
+```
+
+You need this environments.
+
+```
+serpapi: SERPAPI_API_KEY
+bing-search: BING_SEARCH_URL, BING_SUBSCRIPTION_KEY
 ```
 
 ### S3
@@ -32,17 +45,21 @@ docker-compose up --build -d awesomegpt
    }
    ```
 
-## Environment
+## Tools
 
-You must need this environments.
+## TODO
 
-```
-OPENAI_API_KEY
-```
+- [ ] memory saving
+- [ ] session manage
+- [ ] convert to alpaca
+- [ ] requests.get refactoring
+- [ ] prompt upgrade
+- [ ] etc.
 
-You need this environments.
+## Reference
 
-```
-serpapi: SERPAPI_API_KEY
-bing-search: BING_SEARCH_URL, BING_SUBSCRIPTION_KEY
-```
+Thanks to the following repositories.
+
+- https://github.com/jerryjliu/llama_index
+- https://github.com/hwchase17/langchain
+- https://github.com/microsoft/visual-chatgpt

@@ -78,13 +78,8 @@ async def command(request: Request) -> Response:
 
     print("======>Previous memory:\n %s" % agent.memory)
 
-    promptedQuery = ""
-
-    for i, file in enumerate(files):
-        promptedQuery += handler.handle(i + 1, file)
-
+    promptedQuery = "\n".join([handler.handle(file) for file in files])
     promptedQuery += query
-
     print("======>Prompted Text:\n %s" % promptedQuery)
 
     try:

@@ -5,6 +5,7 @@ import requests
 from llama_index.readers.database import DatabaseReader
 from llama_index import GPTSimpleVectorIndex
 
+from bs4 import BeautifulSoup
 from langchain.memory.chat_memory import BaseChatMemory
 
 """Wrapper around subprocess to run commands."""
@@ -60,11 +61,20 @@ class RequestsGet(BaseToolSet):
     )
     def inference(self, url: str) -> str:
         """Run the tool."""
-        text = requests.get(url).text
+        html = requests.get(url).text
+        soup = BeautifulSoup(html)
+        non_readable_tags = soup.find_all(
+            ["script", "style", "header", "footer", "form"]
+        )
 
-        if len(text) > 100:
-            text = text[:100] + "..."
-        return text
+        for non_readable_tag in non_readable_tags:
+            non_readable_tag.extract()
+
+        content = soup.get_text("\n", strip=True)
+
+        if len(content) > 100:
+            content = content[:100] + "..."
+        return content
 
 
 class WineDB(BaseToolSet):

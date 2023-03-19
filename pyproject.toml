@@ -29,6 +29,7 @@ optional = true
 psycopg2-binary = "^2.9.5"
 wikipedia = "^1.4.0"
 google-search-results = "^2.4.2"
+beautifulsoup4 = "^4.11.2"
 
 
 [tool.poetry.group.dev.dependencies]

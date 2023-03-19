@@ -72,8 +72,8 @@ class RequestsGet(BaseToolSet):
 
         content = soup.get_text("\n", strip=True)
 
-        if len(content) > 100:
-            content = content[:100] + "..."
+        if len(content) > 300:
+            content = content[:300] + "..."
         return content
 
 

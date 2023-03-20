@@ -1,10 +1,8 @@
 import os
-import torch
 import uuid
-from PIL import Image
 import numpy as np
-
-from utils import get_new_image_name
+import torch
+from PIL import Image
 
 from transformers import (
     CLIPSegProcessor,
@@ -12,7 +10,6 @@ from transformers import (
 )
 from transformers import (
     BlipProcessor,
-    BlipForConditionalGeneration,
     BlipForQuestionAnswering,
 )
 
@@ -23,6 +20,7 @@ from diffusers import (
 )
 from diffusers import EulerAncestralDiscreteScheduler
 
+from utils import get_new_image_name
 from .base import tool, BaseToolSet
 
 

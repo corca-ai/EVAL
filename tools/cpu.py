@@ -10,7 +10,6 @@ from langchain.memory.chat_memory import BaseChatMemory
 
 """Wrapper around subprocess to run commands."""
 import subprocess
-from typing import List, Union
 
 from .base import tool, BaseToolSet
 
@@ -18,36 +17,28 @@ from .base import tool, BaseToolSet
 class Terminal(BaseToolSet):
     """Executes bash commands and returns the output."""
 
-    def __init__(self, strip_newlines: bool = False, return_err_output: bool = False):
-        """Initialize with stripping newlines."""
-        self.strip_newlines = strip_newlines
-        self.return_err_output = return_err_output
-
     @tool(
         name="Terminal",
         description="Executes commands in a terminal."
         "Input should be valid commands, "
-        "and the output will be any output from running that command. This result should always be wrapped in a code block.",
+        "and the output will be any output from running that command.",
     )
-    def inference(self, commands: Union[str, List[str]]) -> str:
+    def inference(self, commands: str) -> str:
         """Run commands and return final output."""
-        if isinstance(commands, str):
-            commands = [commands]
-        commands = ";".join(commands)
         try:
             output = subprocess.run(
                 commands,
                 shell=True,
-                check=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
             ).stdout.decode()
         except Exception as e:
-            if self.return_err_output:
-                return e.stdout.decode()
-            return str(e)
-        if self.strip_newlines:
-            output = output.strip()
+            output = str(e)
+
+        print(
+            f"\nProcessed Terminal, Input Commands: {commands} "
+            f"Output Answer: {output}"
+        )
         return output
 
 
@@ -74,6 +65,11 @@ class RequestsGet(BaseToolSet):
 
         if len(content) > 300:
             content = content[:300] + "..."
+
+        print(
+            f"\nProcessed RequestsGet, Input Url: {url} " f"Output Contents: {content}"
+        )
+
         return content
 
 
@@ -94,7 +90,6 @@ class WineDB(BaseToolSet):
                 Concat({concat_columns})
             FROM wine
         """
-        # CAST(type AS VARCHAR), 'nameEn', 'nameKo', vintage, nationality, province, CAST(size AS VARCHAR), 'grapeVariety', price, image, description, code, winery, alcohol, pairing
         documents = db.load_data(query=query)
         self.index = GPTSimpleVectorIndex(documents)
 
@@ -116,7 +111,11 @@ class WineDB(BaseToolSet):
                 )
             ]
         )
-        return results.response + "\n\n" + wine
+        output = results.response + "\n\n" + wine
+
+        print(f"\nProcessed WineDB, Input Query: {query} " f"Output Wine: {wine}")
+
+        return output
 
 
 class ExitConversation(BaseToolSet):
@@ -124,11 +123,13 @@ class ExitConversation(BaseToolSet):
         name="exit_conversation",
         description="A tool to exit the conversation. "
         "Use this when you want to end the conversation. "
-        "Input should be a user's query and user's session."
+        "Input should be a user's query."
         "The output will be a message that the conversation is over.",
     )
-    def inference(self, query: str, session: str) -> str:
+    def inference(self, query: str) -> str:
         """Run the tool."""
         # session.clear() # TODO
+
+        print(f"\nProcessed ExitConversation, Input Query: {query} ")
 
         return f"My original question was: {query}"

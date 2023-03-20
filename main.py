@@ -3,11 +3,12 @@ import re
 
 from fastapi import FastAPI
 from pydantic import BaseModel
+
 from s3 import upload
 from env import settings
 
 from prompts.error import ERROR_PROMPT
-from agent import AgentBuilder
+from agents.builder import AgentBuilder
 from tools.base import BaseToolSet
 from tools.cpu import (
     Terminal,
@@ -63,7 +64,7 @@ class Response(TypedDict):
 
 @app.get("/")
 async def index():
-    return {"message": "Hello World. I'm AwesomeGPT."}
+    return {"message": f"Hello World. I'm {settings['BOT_NAME']}."}
 
 
 @app.post("/command")

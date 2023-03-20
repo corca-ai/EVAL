@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "awesomegpt"
+name = "eval"
 version = "0.1.0"
 description = ""
 authors = ["Taeho Lee <taeho@corca.ai>", "Chung Hwan Han <hanch@corca.ai>"]

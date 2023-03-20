@@ -4,21 +4,24 @@ from llm import ChatOpenAI
 from langchain.agents.agent import AgentExecutor
 from langchain.agents.initialize import initialize_agent
 from langchain.chains.conversation.memory import ConversationBufferMemory
-from langchain.memory.chat_memory import BaseChatMemory
 from langchain.chat_models.base import BaseChatModel
+from langchain.memory.chat_memory import BaseChatMemory
+from langchain.output_parsers.base import BaseOutputParser
 
-from prompts.input import AWESOMEGPT_PREFIX, AWESOMEGPT_SUFFIX
+from prompts.input import EVAL_PREFIX, EVAL_SUFFIX
+from env import settings
 
+from agents.parser import EvalOutputParser
 from tools.base import BaseToolSet
 from tools.factory import ToolsFactory
 from handlers.base import BaseHandler, FileHandler, FileType
-from env import settings
 
 
 class AgentBuilder:
     def __init__(self):
         self.llm: BaseChatModel = None
         self.memory: BaseChatMemory = None
+        self.parser: BaseOutputParser = None
         self.tools: list = None
         self.handler: FileHandler = None
 
@@ -29,6 +32,9 @@ class AgentBuilder:
         self.memory = ConversationBufferMemory(
             memory_key="chat_history", return_messages=True
         )
+
+    def build_parser(self):
+        self.parser = EvalOutputParser()
 
     def build_tools(self, toolsets: list[BaseToolSet] = []):
         if self.llm is None:
@@ -50,15 +56,19 @@ class AgentBuilder:
         self.handler = FileHandler(handlers)
 
     def get_agent(self):
-        print("Initializing AwesomeGPT")
+        print(f"Initializing {settings['BOT_NAME']}")
+
         if self.llm is None:
             raise ValueError("LLM must be initialized before agent")
 
-        if self.tools is None:
-            raise ValueError("Tools must be initialized before agent")
-
         if self.memory is None:
             raise ValueError("Memory must be initialized before agent")
+
+        if self.parser is None:
+            raise ValueError("Parser must be initialized before agent")
+
+        if self.tools is None:
+            raise ValueError("Tools must be initialized before agent")
 
         return initialize_agent(
             self.tools,
@@ -67,8 +77,9 @@ class AgentBuilder:
             verbose=True,
             memory=self.memory,
             agent_kwargs={
-                "system_message": AWESOMEGPT_PREFIX,
-                "human_message": AWESOMEGPT_SUFFIX,
+                "system_message": EVAL_PREFIX.format(bot_name=settings["BOT_NAME"]),
+                "human_message": EVAL_SUFFIX.format(bot_name=settings["BOT_NAME"]),
+                "output_parser": self.parser,
             },
         )
 
@@ -85,6 +96,7 @@ class AgentBuilder:
         builder = AgentBuilder()
         builder.build_llm()
         builder.build_memory()
+        builder.build_parser()
         builder.build_tools(toolsets)
         builder.build_handler(handlers)
 

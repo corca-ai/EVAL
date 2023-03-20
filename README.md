@@ -1,27 +1,12 @@
-# AwesomeGPT
+# EVAL
 
-Everything you can do with your computer is possible through AwesomeGPT. It can understand and generate data formats for text, image, dataframe, audio (TODO), video (TODO). It must be run inside a container that is only available to it, and it can build your container environment directly through Terminal Tools.
+Everything you can do with a computer through EVAL is executable like the eval method. It can understand and generate data formats for text, image, dataframe, audio (TODO), video (TODO). It must be run inside a container that is only available to it, and it can build your container environment directly through Terminal Tools.
 
 ## Usage
 
-1. environments settings
-2. S3 Settings
-3. Execute `docker-compose up --build -d awesomegpt`
-
-### Environment
-
-You must need this environments.
-
-```
-OPENAI_API_KEY
-```
-
-You need this environments.
-
-```
-serpapi: SERPAPI_API_KEY
-bing-search: BING_SEARCH_URL, BING_SUBSCRIPTION_KEY
-```
+1. S3 Settings
+2. environments settings
+3. Execute `docker-compose up -d`
 
 ### S3
 
@@ -45,6 +30,27 @@ bing-search: BING_SEARCH_URL, BING_SUBSCRIPTION_KEY
    }
    ```
 
+### Environment
+
+These environmental variables are essential, so please set them.
+
+```
+BOT_NAME: your custom bot name
+OPENAI_API_KEY: openai api key
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+AWS_REGION
+AWS_S3_BUCKET
+```
+
+These environment variables are necessary to use the following tools:  
+If you want to use it, set it up, and if you don't need it, you don't have to set it up.
+
+```
+SERPAPI_API_KEY: need to append google search tool
+BING_SEARCH_URL, BING_SUBSCRIPTION_KEY: need to append bing search tool
+```
+
 ## Tools
 
 ## TODO
@@ -54,6 +60,7 @@ bing-search: BING_SEARCH_URL, BING_SUBSCRIPTION_KEY
 - [ ] convert to alpaca
 - [ ] requests.get refactoring
 - [ ] prompt upgrade
+- [ ] give a tool to create tools
 - [ ] etc.
 
 ## Reference

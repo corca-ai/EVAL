@@ -4,6 +4,7 @@ from transformers import (
     BlipProcessor,
     BlipForConditionalGeneration,
 )
+
 from prompts.file import IMAGE_PROMPT
 
 from .base import BaseHandler

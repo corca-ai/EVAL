@@ -1,16 +1,16 @@
 from env import settings
 
+from typing import Dict
 import requests
 
 from llama_index.readers.database import DatabaseReader
 from llama_index import GPTSimpleVectorIndex
 
 from bs4 import BeautifulSoup
-from langchain.memory.chat_memory import BaseChatMemory
+from langchain.agents.agent import AgentExecutor
 
 import subprocess
 
-from agents.manager import AgentManager
 from .base import tool, BaseToolSet
 
 
@@ -147,20 +147,20 @@ class WineDB(BaseToolSet):
 
 
 class ExitConversation(BaseToolSet):
-    def __init__(self, agent_manager: AgentManager):
-        self.agent_manager = agent_manager
+    def __init__(self, executors: Dict[str, AgentExecutor]):
+        self.executors = executors
 
     @tool(
-        name="exit_conversation",
+        name="Exit Conversation",
         description="A tool to exit the conversation. "
-        "Use this when you want to end the conversation. "
+        "Use this when you want to exit the conversation. "
         "Input should be a user's key."
         "The output will be a message that the conversation is over.",
     )
     def exit(self, key: str) -> str:
         """Run the tool."""
-        self.agent_manager.remove_executor(key)
+        self.executors.pop(key)
 
         print(f"\nProcessed ExitConversation.")
 
-        return f"End conversation."
+        return f"Exit conversation."

@@ -29,13 +29,11 @@ from handlers.dataframe import CsvToDataframe
 
 app = FastAPI()
 
-agent_manager: AgentManager = None
 
 toolsets: List[BaseToolSet] = [
     Terminal(),
     CodeEditor(),
     RequestsGet(),
-    ExitConversation(agent_manager),
     Text2Image("cuda"),
     ImageEditing("cuda"),
     InstructPix2Pix("cuda"),
@@ -78,12 +76,11 @@ async def command(request: Request) -> Response:
 
     print("=============== Running =============")
     print("Inputs:", query, files)
-    # TODO - add state to memory (use key)
-
     executor = agent_manager.get_or_create_executor(key)
 
     print("======>Previous memory:\n %s" % executor.memory)
 
+    # TODO: exit conversation
     promptedQuery = "\n".join([file_handler.handle(file) for file in files])
     promptedQuery += query
     print("======>Prompted Text:\n %s" % promptedQuery)

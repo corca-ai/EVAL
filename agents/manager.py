@@ -5,15 +5,22 @@ from langchain.chains.conversation.memory import ConversationBufferMemory
 from langchain.memory.chat_memory import BaseChatMemory
 
 from tools.base import BaseToolSet
+from tools.cpu import ExitConversation
 
 from .builder import AgentBuilder
 
 
 class AgentManager:
-    def __init__(self, agent: Agent, tools: list[BaseToolSet]):
-        self.agent: Agent = agent
-        self.tools: list[BaseToolSet] = tools
+    def __init__(self):
+        self.agent: Agent = None
+        self.tools: list[BaseToolSet] = []
         self.executors: Dict[str, AgentExecutor] = {}
+
+    def set_agent(self, agent: Agent) -> None:
+        self.agent = agent
+
+    def set_tools(self, tools: list[BaseToolSet]) -> None:
+        self.tools = tools
 
     def create_memory(self) -> BaseChatMemory:
         return ConversationBufferMemory(memory_key="chat_history", return_messages=True)
@@ -37,11 +44,14 @@ class AgentManager:
 
     @staticmethod
     def create(toolsets: list[BaseToolSet]) -> "AgentManager":
+        manager = AgentManager()
+
         builder = AgentBuilder()
         builder.build_llm()
         builder.build_parser()
-        builder.build_tools(toolsets)
-        agent = builder.get_agent()
-        tools = builder.get_tools()
+        builder.build_tools([*toolsets, ExitConversation(manager.executors)])
 
-        return AgentManager(agent, tools)
+        manager.set_agent(builder.get_agent())
+        manager.set_tools(builder.get_tools())
+
+        return manager

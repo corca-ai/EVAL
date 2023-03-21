@@ -1,12 +1,46 @@
 # EVAL
 
-Everything you can do with a computer through EVAL is executable like the eval method. It can understand and generate data formats for text, image, dataframe, audio (TODO), video (TODO). It must be run inside a container that is only available to it, and it can build your container environment directly through Terminal Tools.
+> **EVAL(Elastic Versatile Agent with Langchain) will execute all your requests. Like the eval method!**
+
+You don't have to think about how. If you tell them the results you want, they'll search, code, run, and test the Internet themselves, and they'll return the final results.
+
+### EVAL's FEATURE
+
+1. It can **understand** and **generate** data formats for text, image, dataframe, audio (TODO), video (TODO).
+2. It can **create tools** that it can use by writing and modifying code.
+3. It can **evolve** itself by executing and testing its code.
+
+### BUILT-IN TOOLS
+
+1. Search
+   - Google, Bing, Wikipedia
+   - Custom DB Search (Currently using Corca's Wine Data in https://www.workershop.kr/en)
+     - Use GPT index to quickly find the information you need in a document and use that information to answer
+   - Requests.get (Get information from anywhere you want)
+2. Terminal
+3. Python REPL
+4. Image Understanding, Generation, Editing
+   - Image Understanding
+     - Image Understanding: blip-image-captioning
+     - Visual Question&Answering: blip-vqa
+   - Image Generation: Stable Diffusion 1.5
+   - Image Editing
+     - Replace or remove an object: Stable Diffusion Inpainting
+     - Change Image's style: InstructPix2Pix
+
+Thanks to [LangChain](https://github.com/hwchase17/langchain), [Visual ChatGPT](https://github.com/microsoft/visual-chatgpt), [llama index](https://github.com/jerryjliu/llama_index).
+
+### CUSTOM TOOLS
+
+We also don't know what tools EVAL will create. Every day, It will create the right tools to execute your request.
+
+---
 
 ## Usage
 
 1. S3 Settings
 2. environments settings
-3. Execute `docker-compose up -d`
+3. `docker-compose up -d`
 
 ### S3
 
@@ -51,14 +85,11 @@ SERPAPI_API_KEY: need to append google search tool
 BING_SEARCH_URL, BING_SUBSCRIPTION_KEY: need to append bing search tool
 ```
 
-## Tools
-
 ## TODO
 
 - [ ] memory saving
 - [ ] session manage
 - [ ] convert to alpaca
-- [ ] requests.get refactoring
 - [ ] prompt upgrade
 - [ ] give a tool to create tools
 - [ ] etc.
@@ -67,6 +98,6 @@ BING_SEARCH_URL, BING_SUBSCRIPTION_KEY: need to append bing search tool
 
 Thanks to the following repositories.
 
-- https://github.com/jerryjliu/llama_index
 - https://github.com/hwchase17/langchain
 - https://github.com/microsoft/visual-chatgpt
+- https://github.com/jerryjliu/llama_index

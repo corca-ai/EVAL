@@ -20,6 +20,7 @@ class Terminal(BaseToolSet):
     @tool(
         name="Terminal",
         description="Executes commands in a terminal."
+        "You can install packages with pip, apt, etc."
         "Input should be valid commands, "
         "and the output will be any output from running that command.",
     )

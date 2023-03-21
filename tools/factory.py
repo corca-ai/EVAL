@@ -9,12 +9,54 @@ from .base import BaseToolSet
 
 class ToolsFactory:
     @staticmethod
-    def from_toolsets(toolsets: list[BaseToolSet]) -> list[BaseTool]:
+    def from_toolset(
+        toolset: BaseToolSet,
+        only_global: Optional[bool] = False,
+        only_per_session: Optional[bool] = False,
+        session: Optional[str] = None,
+    ) -> list[BaseTool]:
         tools = []
-        for toolset in toolsets:
-            tools.extend(toolset.to_tools())
+        for wrapper in toolset.tool_wrappers():
+            if only_global and not wrapper.is_global():
+                continue
+            if only_per_session and not wrapper.is_per_session():
+                continue
+            tools.append(wrapper.to_tool(session))
         return tools
 
     @staticmethod
-    def from_names(toolnames: list[str], llm: Optional[BaseLLM]) -> list[BaseTool]:
+    def create_global_tools(
+        toolsets: list[BaseToolSet],
+    ) -> list[BaseTool]:
+        tools = []
+        for toolset in toolsets:
+            tools.extend(
+                ToolsFactory.from_toolset(
+                    toolset=toolset,
+                    only_global=True,
+                )
+            )
+        return tools
+
+    @staticmethod
+    def create_per_session_tools(
+        toolsets: list[BaseToolSet],
+        session: Optional[str] = None,
+    ) -> list[BaseTool]:
+        tools = []
+        for toolset in toolsets:
+            tools.extend(
+                ToolsFactory.from_toolset(
+                    toolset=toolset,
+                    only_per_session=True,
+                    session=session,
+                )
+            )
+        return tools
+
+    @staticmethod
+    def create_global_tools_from_names(
+        toolnames: list[str],
+        llm: Optional[BaseLLM],
+    ) -> list[BaseTool]:
         return load_tools(toolnames, llm=llm)

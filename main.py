@@ -15,7 +15,6 @@ from tools.cpu import (
     CodeEditor,
     RequestsGet,
     WineDB,
-    ExitConversation,
 )
 from tools.gpu import (
     ImageEditing,
@@ -72,15 +71,14 @@ async def index():
 async def command(request: Request) -> Response:
     query = request.query
     files = request.files
-    key = request.key
+    session = request.key
 
     print("=============== Running =============")
     print("Inputs:", query, files)
-    executor = agent_manager.get_or_create_executor(key)
+    executor = agent_manager.get_or_create_executor(session)
 
     print("======>Previous memory:\n %s" % executor.memory)
 
-    # TODO: exit conversation
     promptedQuery = "\n".join([file_handler.handle(file) for file in files])
     promptedQuery += query
     print("======>Prompted Text:\n %s" % promptedQuery)

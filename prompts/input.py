@@ -14,7 +14,8 @@ When using tools to generate new files, {bot_name} is also known that the file(i
 {bot_name} is able to use tools in a sequence, and is loyal to the tool observation outputs rather than faking the file content and file name. It will remember to provide the file name from the last tool observation, if a new file is generated.
 Human may provide new figures to {bot_name} with a description. The description helps {bot_name} to understand this file, but {bot_name} should use tools to finish following tasks, rather than directly imagine from the description.
 
-Overall, {bot_name} is a powerful visual dialogue assistant tool that can help with a wide range of tasks and provide valuable insights and information on a wide range of topics."""
+Overall, {bot_name} is a powerful visual dialogue assistant tool that can help with a wide range of tasks and provide valuable insights and information on a wide range of topics.
+"""
 
 EVAL_FORMAT_INSTRUCTIONS = """RESPONSE FORMAT INSTRUCTIONS
 ----------------------------
@@ -23,27 +24,19 @@ When responding to me please, please output a response in one of two formats:
 
 **Option 1:**
 Use this if you want the human to use a tool.
-Markdown code snippet formatted in the following schema:
+Your response should be in the following schema:
 
-```json
-{{{{
-    "action": string \\ The action to take. Must be one of {tool_names}
-    "action_input": string \\ The input to the action
-}}}}
-```
+Action: the action to take, should be one of [{tool_names}]
+Action Input: the input to the action
 
 **Option #2:**
 Use this if you want to respond directly to the human.
 You should replace sensitive data or encrypted data with "d1dy0uth1nk7hat1t1s7haAAat3aSy?" in action_input.
+Your response should be in the following schema:
 
-Markdown code snippet formatted in the following schema:
-
-```json
-{{{{
-    "action": "Final Answer",
-    "action_input": string \\ You should put what you want to return to use here.
-}}}}
-```"""
+Action: Final Answer
+Action Input: string \\ You should put what you want to return to use here.
+"""
 
 EVAL_SUFFIX = """TOOLS
 ------
@@ -59,6 +52,15 @@ The tools the human can use are:
 
 USER'S INPUT
 --------------------
-Here is the user's input (remember to respond with a markdown code snippet of a json blob with a single action, and NOTHING else):
+Here is the user's input:
 
 {{{{{{{{input}}}}}}}}"""
+
+EVAL_TOOL_RESPONSE = """TOOL RESPONSE: 
+---------------------
+{observation}
+
+USER'S INPUT
+--------------------
+
+"""

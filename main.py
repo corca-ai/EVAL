@@ -8,10 +8,11 @@ from s3 import upload
 from env import settings
 
 from prompts.error import ERROR_PROMPT
-from agents.builder import AgentBuilder
+from agents.manager import AgentManager
 from tools.base import BaseToolSet
 from tools.cpu import (
     Terminal,
+    CodeEditor,
     RequestsGet,
     WineDB,
     ExitConversation,
@@ -22,16 +23,19 @@ from tools.gpu import (
     Text2Image,
     VisualQuestionAnswering,
 )
-from handlers.base import BaseHandler, FileType
+from handlers.base import BaseHandler, FileHandler, FileType
 from handlers.image import ImageCaptioning
 from handlers.dataframe import CsvToDataframe
 
 app = FastAPI()
 
+agent_manager: AgentManager = None
+
 toolsets: List[BaseToolSet] = [
     Terminal(),
+    CodeEditor(),
     RequestsGet(),
-    ExitConversation(),
+    ExitConversation(agent_manager),
     Text2Image("cuda"),
     ImageEditing("cuda"),
     InstructPix2Pix("cuda"),
@@ -46,9 +50,8 @@ handlers: Dict[FileType, BaseHandler] = {
 if settings["WINEDB_HOST"] and settings["WINEDB_PASSWORD"]:
     toolsets.append(WineDB())
 
-agent, handler = AgentBuilder.get_agent_and_handler(
-    toolsets=toolsets, handlers=handlers
-)
+agent_manager = AgentManager.create(toolsets=toolsets)
+file_handler = FileHandler(handlers=handlers)
 
 
 class Request(BaseModel):
@@ -77,17 +80,19 @@ async def command(request: Request) -> Response:
     print("Inputs:", query, files)
     # TODO - add state to memory (use key)
 
-    print("======>Previous memory:\n %s" % agent.memory)
+    executor = agent_manager.get_or_create_executor(key)
 
-    promptedQuery = "\n".join([handler.handle(file) for file in files])
+    print("======>Previous memory:\n %s" % executor.memory)
+
+    promptedQuery = "\n".join([file_handler.handle(file) for file in files])
     promptedQuery += query
     print("======>Prompted Text:\n %s" % promptedQuery)
 
     try:
-        res = agent({"input": promptedQuery})
+        res = executor({"input": promptedQuery})
     except Exception as e:
         try:
-            res = agent(
+            res = executor(
                 {
                     "input": ERROR_PROMPT.format(promptedQuery=promptedQuery, e=str(e)),
                 }

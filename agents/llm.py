@@ -217,7 +217,9 @@ class ChatOpenAI(BaseChatModel, BaseModel):
 
         @retry_decorator
         def _completion_with_retry(**kwargs: Any) -> Any:
-            return self.client.create(**kwargs)
+            response = self.client.create(**kwargs)
+            print(response)
+            return response
 
         return _completion_with_retry(**kwargs)
 
@@ -226,11 +228,11 @@ class ChatOpenAI(BaseChatModel, BaseModel):
     ) -> ChatResult:
 
         message_dicts, params = self._create_message_dicts(messages, stop)
-        # for item in message_dicts:
-        #     for k, v in item.items():
-        #         print(f"{k}: {v}")
-        #     print("-------")
-        # print("===========")
+        for item in message_dicts:
+            for k, v in item.items():
+                print(f"{k}: {v}")
+            print("-------")
+        print("===========")
 
         if self.streaming:
             inner_completion = ""

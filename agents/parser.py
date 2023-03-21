@@ -1,4 +1,5 @@
 import json
+import re
 from typing import Dict
 
 from langchain.output_parsers.base import BaseOutputParser
@@ -11,15 +12,10 @@ class EvalOutputParser(BaseOutputParser):
         return EVAL_FORMAT_INSTRUCTIONS
 
     def parse(self, text: str) -> Dict[str, str]:
-        cleaned_output = text.strip()
-        if "```json" in cleaned_output:
-            _, cleaned_output = cleaned_output.split("```json")
-        if cleaned_output.startswith("```json"):
-            cleaned_output = cleaned_output[len("```json") :]
-        if cleaned_output.startswith("```"):
-            cleaned_output = cleaned_output[len("```") :]
-        if cleaned_output.endswith("```"):
-            cleaned_output = cleaned_output[: -len("```")]
-        cleaned_output = cleaned_output.strip()
-        response = json.loads(cleaned_output)
-        return {"action": response["action"], "action_input": response["action_input"]}
+        regex = r"Action: (.*?)[\n]*Action Input: (.*)"
+        match = re.search(regex, text, re.DOTALL)
+        if not match:
+            raise ValueError(f"Could not parse LLM output: `{text}`")
+        action = match.group(1).strip()
+        action_input = match.group(2)
+        return {"action": action, "action_input": action_input.strip(" ").strip('"')}

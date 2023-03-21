@@ -8,15 +8,13 @@ from llama_index import GPTSimpleVectorIndex
 from bs4 import BeautifulSoup
 from langchain.memory.chat_memory import BaseChatMemory
 
-"""Wrapper around subprocess to run commands."""
 import subprocess
 
+from agents.manager import AgentManager
 from .base import tool, BaseToolSet
 
 
 class Terminal(BaseToolSet):
-    """Executes bash commands and returns the output."""
-
     @tool(
         name="Terminal",
         description="Executes commands in a terminal."
@@ -39,6 +37,35 @@ class Terminal(BaseToolSet):
         print(
             f"\nProcessed Terminal, Input Commands: {commands} "
             f"Output Answer: {output}"
+        )
+        return output
+
+
+class CodeEditor(BaseToolSet):
+    @tool(
+        name="CodeEditor.WRITE",
+        description="Writes and appends code."
+        "It can be used to write or append code in any language. "
+        "If the code is completed, use the Terminal tool to execute it, if not, append the code through the CodeEditor tool."
+        "Input should be filename, status, code. Status will be 'complete' or 'incomplete'. ex. 'test.py|complete\nprint('hello world')\n"
+        "and the output will be status and last line. status will be 'complete' or 'incomplete' or 'error'.",
+    )
+    def write(self, inputs: str) -> str:
+        """Save codes to file and return success or failure."""
+        filename, status_and_code = inputs.split("|", 1)
+        status, code = status_and_code.split("\n", 1)
+
+        if status != "complete" and status != "incomplete":
+            return "error: status must be complete or incomplete"
+
+        try:
+            with open(filename, "a") as f:
+                f.write(code)
+            output = status + "\nLast line was:" + code.split("\n")[-1]
+        except Exception as e:
+            output = "error"
+        print(
+            f"\nProcessed CodeEditor, Input Codes: {code} " f"Output Answer: {output}"
         )
         return output
 
@@ -95,7 +122,7 @@ class WineDB(BaseToolSet):
         self.index = GPTSimpleVectorIndex(documents)
 
     @tool(
-        name="Wine Recommendataion",
+        name="Wine Recommendation",
         description="A tool to recommend wines based on a user's input. "
         "Inputs are necessary factors for wine recommendations, such as the user's mood today, side dishes to eat with wine, people to drink wine with, what things you want to do, the scent and taste of their favorite wine."
         "The output will be a list of recommended wines."
@@ -120,17 +147,20 @@ class WineDB(BaseToolSet):
 
 
 class ExitConversation(BaseToolSet):
+    def __init__(self, agent_manager: AgentManager):
+        self.agent_manager = agent_manager
+
     @tool(
         name="exit_conversation",
         description="A tool to exit the conversation. "
         "Use this when you want to end the conversation. "
-        "Input should be a user's query."
+        "Input should be a user's key."
         "The output will be a message that the conversation is over.",
     )
-    def inference(self, query: str) -> str:
+    def exit(self, key: str) -> str:
         """Run the tool."""
-        # session.clear() # TODO
+        self.agent_manager.remove_executor(key)
 
-        print(f"\nProcessed ExitConversation, Input Query: {query} ")
+        print(f"\nProcessed ExitConversation.")
 
-        return f"My original question was: {query}"
+        return f"End conversation."

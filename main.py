@@ -15,7 +15,6 @@ from tools.cpu import (
     CodeEditor,
     RequestsGet,
     WineDB,
-    ExitConversation,
 )
 from tools.gpu import (
     ImageEditing,
@@ -35,14 +34,14 @@ toolsets: List[BaseToolSet] = [
     Terminal(),
     CodeEditor(),
     RequestsGet(),
-    # Text2Image("cuda"),
-    # ImageEditing("cuda"),
-    # InstructPix2Pix("cuda"),
-    # VisualQuestionAnswering("cuda"),
+    Text2Image("cuda"),
+    ImageEditing("cuda"),
+    InstructPix2Pix("cuda"),
+    VisualQuestionAnswering("cuda"),
 ]
 
 handlers: Dict[FileType, BaseHandler] = {
-    # FileType.IMAGE: ImageCaptioning("cuda"),
+    FileType.IMAGE: ImageCaptioning("cuda"),
     FileType.DATAFRAME: CsvToDataframe(),
 }
 
@@ -73,15 +72,14 @@ async def index():
 async def command(request: Request) -> Response:
     query = request.query
     files = request.files
-    key = request.key
+    session = request.key
 
     logger.info("=============== Running =============")
     logger.info(f"Query: {query}, Files: {files}")
-    executor = agent_manager.get_or_create_executor(key)
+    executor = agent_manager.get_or_create_executor(session)
 
     logger.info(f"======> Previous memory:\n\t{executor.memory}")
 
-    # TODO: exit conversation
     promptedQuery = "\n".join([file_handler.handle(file) for file in files])
     promptedQuery += query
     logger.info(f"======> Prompted Text:\n\t{promptedQuery}")

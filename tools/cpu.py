@@ -11,7 +11,7 @@ from langchain.agents.agent import AgentExecutor
 
 import subprocess
 
-from tools.base import tool, BaseToolSet
+from tools.base import tool, BaseToolSet, ToolScope
 from logger import logger
 
 
@@ -225,19 +225,17 @@ class WineDB(BaseToolSet):
 
 
 class ExitConversation(BaseToolSet):
-    def __init__(self, executors: Dict[str, AgentExecutor]):
-        self.executors = executors
-
     @tool(
         name="Exit Conversation",
         description="A tool to exit the conversation. "
         "Use this when you want to exit the conversation. "
-        "Input should be a user's key."
+        "Input should be a user's session."
         "The output will be a message that the conversation is over.",
+        scope=ToolScope.SESSION,
     )
-    def exit(self, key: str) -> str:
+    def exit(self, *args, session: str) -> str:
         """Run the tool."""
-        self.executors.pop(key)
+        self.executors.pop(session)
 
         logger.debug(f"\nProcessed ExitConversation.")
 

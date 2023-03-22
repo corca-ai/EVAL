@@ -12,14 +12,19 @@ You don't have to think about how. If you tell them the results you want, they'l
 
 ### BUILT-IN TOOLS
 
-1. Search
+1. Terminal
+2. Code Editor
+   - READ: Read and understand file.
+   - WRITE: Write code to create a new tool.
+   - PATCH: Correct the error throught the code patch if an error occurs.
+   - DELETE: Delete code in file for a new start.
+3. Search
    - Google, Bing, Wikipedia
    - Custom DB Search (Currently using Corca's Wine Data in https://www.workershop.kr/en)
      - Use GPT index to quickly find the information you need in a document and use that information to answer
    - Requests.get (Get information from anywhere you want)
-2. Terminal
-3. Python REPL
-4. Image Understanding, Generation, Editing
+4. Python REPL
+5. Image Understanding, Generation, Editing
    - Image Understanding
      - Image Understanding: blip-image-captioning
      - Visual Question&Answering: blip-vqa

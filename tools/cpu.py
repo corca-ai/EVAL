@@ -148,7 +148,7 @@ class CodeEditor(BaseToolSet):
 
 class RequestsGet(BaseToolSet):
     @tool(
-        name="requests_get",
+        name="Requests Get",
         description="A portal to the internet. "
         "Use this when you need to get specific content from a website."
         "Input should be a  url (i.e. https://www.google.com)."

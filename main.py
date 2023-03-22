@@ -15,6 +15,7 @@ from tools.cpu import (
     CodeEditor,
     RequestsGet,
     WineDB,
+    ExitConversation,
 )
 from tools.gpu import (
     ImageEditing,
@@ -34,6 +35,8 @@ toolsets: List[BaseToolSet] = [
     Terminal(),
     CodeEditor(),
     RequestsGet(),
+    WineDB(),
+    ExitConversation(),
     Text2Image("cuda"),
     ImageEditing("cuda"),
     InstructPix2Pix("cuda"),

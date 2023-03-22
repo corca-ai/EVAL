@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 import subprocess
 
 from tools.base import tool, BaseToolSet, ToolScope, SessionGetter
+from editor import CodePatcher, CodeReader
 from logger import logger
 
 
@@ -48,21 +49,8 @@ class CodeEditor(BaseToolSet):
         "and the output will be code. ",
     )
     def read(self, inputs: str) -> str:
-        filename, line = inputs.split(",")
-        line = line.split("-")
-        if len(line) == 1:
-            line = int(line[0])
-        else:
-            line = [int(i) for i in line]
-
         try:
-            with open(filename, "r") as f:
-                code = f.readlines()
-            if isinstance(line, int):
-                code = code[line - 1]
-            else:
-                code = "".join(code[line[0] - 1 : line[1]])
-            output = code
+            output = CodeReader.read(inputs)
         except Exception as e:
             output = str(e)
 
@@ -98,23 +86,22 @@ class CodeEditor(BaseToolSet):
 
     @tool(
         name="CodeEditor.PATCH",
-        description="Correct the error throught the code patch if an error occurs. "
-        "Input is a list of patches. The patch is separated by \\n.The patch consists of a file name, line number, and new code. It is seperated by -||-. "
-        "ex. \"test.py-||-1-||-print('hello world')\ntest.py-||-2-||-print('hello world')\n\" "
-        "and the output will be success or error message. ",
+        description="Patch the code to correct the error if an error occurs or to improve it. "
+        "Input is a list of patches. The patch is separated by {seperator}. ".format(
+            seperator=CodePatcher.separator.replace("\n", "\\n")
+        )
+        + "Each patch has to be formatted like below.\n"
+        "<filepath>|<start_line>,<start_col>|<end_line>,<end_col>|<content>"
+        "Code between start and end will be replaced with content. "
+        "The output will be written/deleted bytes or error message. ",
     )
     def patch(self, patches: str) -> str:
-        for patch in patches.split("\n"):
-            filename, line_number, new_line = patch.split("-||-")  # TODO: fix this
-            try:
-                with open(filename, "r") as f:
-                    lines = f.readlines()
-                lines[int(line_number) - 1] = new_line + "\n"
-                with open(filename, "w") as f:
-                    f.writelines(lines)
-                output = "success"
-            except Exception as e:
-                output = str(e)
+        try:
+            w, d = CodePatcher.patch(patches)
+            output = f"successfully wrote {w}, deleted {d}"
+        except Exception as e:
+            output = str(e)
+
         logger.debug(
             f"\nProcessed CodeEditor, Input Patch: {patches} "
             f"Output Answer: {output}"

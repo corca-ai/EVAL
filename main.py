@@ -34,14 +34,14 @@ toolsets: List[BaseToolSet] = [
     Terminal(),
     CodeEditor(),
     RequestsGet(),
-    # Text2Image("cuda"),
-    # ImageEditing("cuda"),
-    # InstructPix2Pix("cuda"),
-    # VisualQuestionAnswering("cuda"),
+    Text2Image("cuda"),
+    ImageEditing("cuda"),
+    InstructPix2Pix("cuda"),
+    VisualQuestionAnswering("cuda"),
 ]
 
 handlers: Dict[FileType, BaseHandler] = {
-    # FileType.IMAGE: ImageCaptioning("cuda"),
+    FileType.IMAGE: ImageCaptioning("cuda"),
     FileType.DATAFRAME: CsvToDataframe(),
 }
 

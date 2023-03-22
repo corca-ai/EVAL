@@ -11,7 +11,8 @@ from langchain.agents.agent import AgentExecutor
 
 import subprocess
 
-from .base import tool, BaseToolSet, ToolScope
+from tools.base import tool, BaseToolSet, ToolScope
+from logger import logger
 
 
 class Terminal(BaseToolSet):
@@ -22,7 +23,7 @@ class Terminal(BaseToolSet):
         "Input should be valid commands, "
         "and the output will be any output from running that command.",
     )
-    def inference(self, commands: str) -> str:
+    def execute(self, commands: str) -> str:
         """Run commands and return final output."""
         try:
             output = subprocess.run(
@@ -34,7 +35,7 @@ class Terminal(BaseToolSet):
         except Exception as e:
             output = str(e)
 
-        print(
+        logger.debug(
             f"\nProcessed Terminal, Input Commands: {commands} "
             f"Output Answer: {output}"
         )
@@ -43,29 +44,104 @@ class Terminal(BaseToolSet):
 
 class CodeEditor(BaseToolSet):
     @tool(
+        name="CodeEditor.READ",
+        description="Read and understand code. "
+        "Input should be filename and line number group. ex. test.py,1-10 "
+        "and the output will be code. ",
+    )
+    def read(self, inputs: str) -> str:
+        filename, line = inputs.split(",")
+        line = line.split("-")
+        if len(line) == 1:
+            line = int(line[0])
+        else:
+            line = [int(i) for i in line]
+
+        try:
+            with open(filename, "r") as f:
+                code = f.readlines()
+            if isinstance(line, int):
+                code = code[line - 1]
+            else:
+                code = "".join(code[line[0] - 1 : line[1]])
+            output = code
+        except Exception as e:
+            output = str(e)
+
+        logger.debug(
+            f"\nProcessed CodeEditor.READ, Input Commands: {inputs} "
+            f"Output Answer: {output}"
+        )
+        return output
+
+    @tool(
         name="CodeEditor.WRITE",
-        description="Writes and appends code."
-        "It can be used to write or append code in any language. "
-        "If the code is completed, use the Terminal tool to execute it, if not, append the code through the CodeEditor tool."
-        "Input should be filename, status, code. Status will be 'complete' or 'incomplete'. ex. 'test.py|complete\nprint('hello world')\n"
-        "and the output will be status and last line. status will be 'complete' or 'incomplete' or 'error'.",
+        description="Write code to create a new tool. "
+        "You must check the file's contents before writing. This tool only supports append code.  "
+        "If the code is completed, use the Terminal tool to execute it, if not, append the code through the CodeEditor tool. "
+        "Input should be filename and code. "
+        "ex. test.py\nprint('hello world')\n "
+        "and the output will be last 3 line.",
     )
     def write(self, inputs: str) -> str:
-        """Save codes to file and return success or failure."""
-        filename, status_and_code = inputs.split("|", 1)
-        status, code = status_and_code.split("\n", 1)
-
-        if status != "complete" and status != "incomplete":
-            return "error: status must be complete or incomplete"
+        filename, code = inputs.split("\n", 1)
 
         try:
             with open(filename, "a") as f:
                 f.write(code)
-            output = status + "\nLast line was:" + code.split("\n")[-1]
+            output = "Last 3 line was:\n" + "\n".join(code.split("\n")[-3:])
         except Exception as e:
-            output = "error"
-        print(
+            output = str(e)
+
+        logger.debug(
             f"\nProcessed CodeEditor, Input Codes: {code} " f"Output Answer: {output}"
+        )
+        return output
+
+    @tool(
+        name="CodeEditor.PATCH",
+        description="Correct the error throught the code patch if an error occurs. "
+        "Input should be list of filename, line number, new line (Be sure to consider indentations.) Seperated by -||-."
+        "ex. \"test.py-||-1-||-print('hello world')\ntest.py-||-2-||-print('hello world')\n\" "
+        "and the output will be success or error message. ",
+    )
+    def patch(self, patches: str) -> str:
+        for patch in patches.split("\n"):
+            filename, line_number, new_line = patch.split("-||-")  # TODO: fix this
+            try:
+                with open(filename, "r") as f:
+                    lines = f.readlines()
+                lines[int(line_number) - 1] = new_line + "\n"
+                with open(filename, "w") as f:
+                    f.writelines(lines)
+                output = "success"
+            except Exception as e:
+                output = str(e)
+        logger.debug(
+            f"\nProcessed CodeEditor, Input Patch: {patches} "
+            f"Output Answer: {output}"
+        )
+        return output
+
+    @tool(
+        name="CodeEditor.DELETE",
+        description="Delete code in file for a new start. "
+        "Input should be filename."
+        "ex. test.py "
+        "Output will be success or error message.",
+    )
+    def delete(self, inputs: str) -> str:
+        filename = inputs
+        try:
+            with open(filename, "w") as f:
+                f.write("")
+            output = "success"
+        except Exception as e:
+            output = str(e)
+
+        logger.debug(
+            f"\nProcessed CodeEditor, Input filename: {inputs} "
+            f"Output Answer: {output}"
         )
         return output
 
@@ -78,7 +154,7 @@ class RequestsGet(BaseToolSet):
         "Input should be a  url (i.e. https://www.google.com)."
         "The output will be the text response of the GET request.",
     )
-    def inference(self, url: str) -> str:
+    def get(self, url: str) -> str:
         """Run the tool."""
         html = requests.get(url).text
         soup = BeautifulSoup(html)
@@ -94,7 +170,7 @@ class RequestsGet(BaseToolSet):
         if len(content) > 300:
             content = content[:300] + "..."
 
-        print(
+        logger.debug(
             f"\nProcessed RequestsGet, Input Url: {url} " f"Output Contents: {content}"
         )
 
@@ -128,7 +204,7 @@ class WineDB(BaseToolSet):
         "The output will be a list of recommended wines."
         "The tool is based on a database of wine reviews, which is stored in a database.",
     )
-    def inference(self, query: str) -> str:
+    def recommend(self, query: str) -> str:
         """Run the tool."""
         results = self.index.query(query)
         wine = "\n".join(
@@ -141,7 +217,9 @@ class WineDB(BaseToolSet):
         )
         output = results.response + "\n\n" + wine
 
-        print(f"\nProcessed WineDB, Input Query: {query} " f"Output Wine: {wine}")
+        logger.debug(
+            f"\nProcessed WineDB, Input Query: {query} " f"Output Wine: {wine}"
+        )
 
         return output
 
@@ -159,6 +237,6 @@ class ExitConversation(BaseToolSet):
         """Run the tool."""
         self.executors.pop(session)
 
-        print(f"\nProcessed ExitConversation.")
+        logger.debug(f"\nProcessed ExitConversation.")
 
         return f"Exit conversation."

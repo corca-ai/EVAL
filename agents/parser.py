@@ -1,4 +1,3 @@
-import json
 import re
 from typing import Dict
 
@@ -15,7 +14,7 @@ class EvalOutputParser(BaseOutputParser):
         regex = r"Action: (.*?)[\n]*Action Input: (.*)"
         match = re.search(regex, text, re.DOTALL)
         if not match:
-            raise ValueError(f"Could not parse LLM output: `{text}`")
+            return {"action": "Exit Conversation", "action_input": text}
         action = match.group(1).strip()
         action_input = match.group(2)
         return {"action": action, "action_input": action_input.strip(" ").strip('"')}

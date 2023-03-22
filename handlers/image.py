@@ -7,7 +7,7 @@ from transformers import (
 
 from prompts.file import IMAGE_PROMPT
 
-from .base import BaseHandler
+from handlers.base import BaseHandler
 
 
 class ImageCaptioning(BaseHandler):

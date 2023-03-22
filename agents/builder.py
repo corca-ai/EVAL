@@ -7,9 +7,9 @@ from env import settings
 from tools.base import BaseToolSet
 from tools.factory import ToolsFactory
 
-from .llm import ChatOpenAI
-from .chat_agent import ConversationalChatAgent
-from .parser import EvalOutputParser
+from agents.llm import ChatOpenAI
+from agents.chat_agent import ConversationalChatAgent
+from agents.parser import EvalOutputParser
 
 
 class AgentBuilder:

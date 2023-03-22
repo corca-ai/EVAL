@@ -1,10 +1,9 @@
 from typing import Optional
-
 from langchain.agents import load_tools
 from langchain.agents.tools import BaseTool
 from langchain.llms.base import BaseLLM
 
-from tools.base import BaseToolSet
+from tools.base import BaseToolSet, SessionGetter
 
 
 class ToolsFactory:
@@ -13,7 +12,7 @@ class ToolsFactory:
         toolset: BaseToolSet,
         only_global: Optional[bool] = False,
         only_per_session: Optional[bool] = False,
-        session: Optional[str] = None,
+        get_session: SessionGetter = lambda: [],
     ) -> list[BaseTool]:
         tools = []
         for wrapper in toolset.tool_wrappers():
@@ -21,7 +20,7 @@ class ToolsFactory:
                 continue
             if only_per_session and not wrapper.is_per_session():
                 continue
-            tools.append(wrapper.to_tool(session))
+            tools.append(wrapper.to_tool(get_session=get_session))
         return tools
 
     @staticmethod
@@ -41,7 +40,7 @@ class ToolsFactory:
     @staticmethod
     def create_per_session_tools(
         toolsets: list[BaseToolSet],
-        session: Optional[str] = None,
+        get_session: SessionGetter = lambda: [],
     ) -> list[BaseTool]:
         tools = []
         for toolset in toolsets:
@@ -49,7 +48,7 @@ class ToolsFactory:
                 ToolsFactory.from_toolset(
                     toolset=toolset,
                     only_per_session=True,
-                    session=session,
+                    get_session=get_session,
                 )
             )
         return tools

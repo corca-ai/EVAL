@@ -1,17 +1,15 @@
 from env import settings
 
-from typing import Dict
 import requests
 
 from llama_index.readers.database import DatabaseReader
 from llama_index import GPTSimpleVectorIndex
 
 from bs4 import BeautifulSoup
-from langchain.agents.agent import AgentExecutor
 
 import subprocess
 
-from tools.base import tool, BaseToolSet, ToolScope
+from tools.base import tool, BaseToolSet, ToolScope, SessionGetter
 from logger import logger
 
 
@@ -233,9 +231,10 @@ class ExitConversation(BaseToolSet):
         "The output will be a message that the conversation is over.",
         scope=ToolScope.SESSION,
     )
-    def exit(self, *args, session: str) -> str:
+    def exit(self, *args, get_session: SessionGetter) -> str:
         """Run the tool."""
-        self.executors.pop(session)
+        _, executor = get_session()
+        del executor
 
         logger.debug(f"\nProcessed ExitConversation.")
 

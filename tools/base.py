@@ -1,12 +1,16 @@
-from typing import Callable, Optional, Any
+from typing import Optional, Callable, Tuple
 from enum import Enum
 
 from langchain.agents.tools import Tool, BaseTool
+from langchain.agents.agent import AgentExecutor
 
 
 class ToolScope(Enum):
     GLOBAL = "global"
     SESSION = "session"
+
+
+SessionGetter = Callable[[], Tuple[str, AgentExecutor]]
 
 
 def tool(
@@ -37,10 +41,15 @@ class ToolWrapper:
     def is_per_session(self) -> bool:
         return self.scope == ToolScope.SESSION
 
-    def to_tool(self, session: Optional[str] = None) -> BaseTool:
+    def to_tool(
+        self,
+        get_session: SessionGetter = lambda: [],
+    ) -> BaseTool:
         func = self.func
         if self.is_per_session():
-            func = lambda *args, **kwargs: self.func(*args, **kwargs, session=session)
+            func = lambda *args, **kwargs: self.func(
+                *args, **kwargs, get_session=get_session
+            )
 
         return Tool(
             name=self.name,

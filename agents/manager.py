@@ -34,7 +34,7 @@ class AgentManager:
                 *self.global_tools,
                 *ToolsFactory.create_per_session_tools(
                     self.toolsets,
-                    session,
+                    get_session=lambda: (session, self.executors[session]),
                 ),
             ],
             memory=memory,
@@ -47,7 +47,7 @@ class AgentManager:
 
     def get_or_create_executor(self, session: str) -> AgentExecutor:
         if not (session in self.executors):
-            self.executors[session] = self.create_executor(session)
+            self.executors[session] = self.create_executor(session=session)
         return self.executors[session]
 
     @staticmethod

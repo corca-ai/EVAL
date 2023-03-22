@@ -7,7 +7,7 @@ from langchain.memory.chat_memory import BaseChatMemory
 from tools.base import BaseToolSet
 from tools.cpu import ExitConversation
 
-from .builder import AgentBuilder
+from agents.builder import AgentBuilder
 
 
 class AgentManager:
@@ -31,6 +31,7 @@ class AgentManager:
             agent=self.agent,
             tools=self.tools,
             memory=memory,
+            verbose=True,
         )
 
     def remove_executor(self, key: str) -> None:

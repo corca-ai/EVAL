@@ -7,20 +7,22 @@ load_dotenv()
 
 
 class DotEnv(TypedDict):
+    LOG_LEVEL: str  # optional
     BOT_NAME: str
     AWS_ACCESS_KEY_ID: str
     AWS_SECRET_ACCESS_KEY: str
     AWS_REGION: str
     AWS_S3_BUCKET: str
-    WINEDB_HOST: str
-    WINEDB_PASSWORD: str
+    WINEDB_HOST: str  # optional
+    WINEDB_PASSWORD: str  # optional
     OPENAI_API_KEY: str
-    BING_SEARCH_URL: str
-    BING_SUBSCRIPTION_KEY: str
-    SERPAPI_API_KEY: str
+    BING_SEARCH_URL: str  # optional
+    BING_SUBSCRIPTION_KEY: str  # optional
+    SERPAPI_API_KEY: str  # optional
 
 
 settings: DotEnv = {
+    "LOG_LEVEL": os.getenv("LOG_LEVEL", "INFO"),
     "BOT_NAME": os.getenv("BOT_NAME", "Orca"),
     "AWS_ACCESS_KEY_ID": os.getenv("AWS_ACCESS_KEY_ID"),
     "AWS_SECRET_ACCESS_KEY": os.getenv("AWS_SECRET_ACCESS_KEY"),

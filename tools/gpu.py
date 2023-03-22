@@ -21,7 +21,9 @@ from diffusers import (
 from diffusers import EulerAncestralDiscreteScheduler
 
 from utils import get_new_image_name
-from .base import tool, BaseToolSet
+from logger import logger
+
+from tools.base import tool, BaseToolSet
 
 
 class MaskFormer(BaseToolSet):
@@ -106,10 +108,12 @@ class ImageEditing(BaseToolSet):
         )
         updated_image = updated_image.resize(original_size)
         updated_image.save(updated_image_path)
-        print(
+
+        logger.debug(
             f"\nProcessed ImageEditing, Input Image: {image_path}, Replace {to_be_replaced_txt} to {replace_with_txt}, "
             f"Output Image: {updated_image_path}"
         )
+
         return updated_image_path
 
 
@@ -136,7 +140,7 @@ class InstructPix2Pix(BaseToolSet):
     )
     def inference(self, inputs):
         """Change style of image."""
-        print("===>Starting InstructPix2Pix Inference")
+        logger.debug("===> Starting InstructPix2Pix Inference")
         image_path, text = inputs.split(",")[0], ",".join(inputs.split(",")[1:])
         original_image = Image.open(image_path)
         image = self.pipe(
@@ -144,10 +148,12 @@ class InstructPix2Pix(BaseToolSet):
         ).images[0]
         updated_image_path = get_new_image_name(image_path, func_name="pix2pix")
         image.save(updated_image_path)
-        print(
+
+        logger.debug(
             f"\nProcessed InstructPix2Pix, Input Image: {image_path}, Instruct Text: {text}, "
             f"Output Image: {updated_image_path}"
         )
+
         return updated_image_path
 
 
@@ -177,9 +183,11 @@ class Text2Image(BaseToolSet):
         prompt = text + ", " + self.a_prompt
         image = self.pipe(prompt, negative_prompt=self.n_prompt).images[0]
         image.save(image_filename)
-        print(
+
+        logger.debug(
             f"\nProcessed Text2Image, Input Text: {text}, Output Image: {image_filename}"
         )
+
         return image_filename
 
 
@@ -207,8 +215,10 @@ class VisualQuestionAnswering(BaseToolSet):
         )
         out = self.model.generate(**inputs)
         answer = self.processor.decode(out[0], skip_special_tokens=True)
-        print(
+
+        logger.debug(
             f"\nProcessed VisualQuestionAnswering, Input Image: {image_path}, Input Question: {question}, "
             f"Output Answer: {answer}"
         )
+
         return answer

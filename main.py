@@ -35,7 +35,6 @@ toolsets: List[BaseToolSet] = [
     Terminal(),
     CodeEditor(),
     RequestsGet(),
-    WineDB(),
     ExitConversation(),
     Text2Image("cuda"),
     ImageEditing("cuda"),
@@ -90,6 +89,7 @@ async def command(request: Request) -> Response:
     try:
         res = executor({"input": promptedQuery})
     except Exception as e:
+        logger.error(f"error while processing request: ", str(e))
         try:
             res = executor(
                 {

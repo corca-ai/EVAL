@@ -57,8 +57,6 @@ Here is the user's input:
 EVAL_TOOL_RESPONSE = """TOOL RESPONSE: 
 ---------------------
 {observation}
-
-USER'S INPUT
 --------------------
-
+After exiting conversation, you must choose Final Answer Action.
 """

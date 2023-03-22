@@ -227,15 +227,14 @@ class ExitConversation(BaseToolSet):
         name="Exit Conversation",
         description="A tool to exit the conversation. "
         "Use this when you want to exit the conversation. "
-        "Input should be a user's session."
-        "The output will be a message that the conversation is over.",
+        "The input should be a message that the conversation is over.",
         scope=ToolScope.SESSION,
     )
-    def exit(self, *args, get_session: SessionGetter) -> str:
+    def exit(self, message: str, get_session: SessionGetter) -> str:
         """Run the tool."""
         _, executor = get_session()
         del executor
 
         logger.debug(f"\nProcessed ExitConversation.")
 
-        return f"Exit conversation."
+        return message

@@ -26,7 +26,7 @@ from langchain.schema import (
 )
 from langchain.utils import get_from_dict_or_env
 
-logger = logging.getLogger(__file__)
+from logger import logger
 
 
 def _create_retry_decorator(llm: ChatOpenAI) -> Callable[[Any], Any]:
@@ -218,7 +218,7 @@ class ChatOpenAI(BaseChatModel, BaseModel):
         @retry_decorator
         def _completion_with_retry(**kwargs: Any) -> Any:
             response = self.client.create(**kwargs)
-            print(response)
+            logger.debug("Response:\n\t%s", response)
             return response
 
         return _completion_with_retry(**kwargs)
@@ -228,11 +228,12 @@ class ChatOpenAI(BaseChatModel, BaseModel):
     ) -> ChatResult:
 
         message_dicts, params = self._create_message_dicts(messages, stop)
+        logger.debug("Messages:\n")
         for item in message_dicts:
             for k, v in item.items():
-                print(f"{k}: {v}")
-            print("-------")
-        print("===========")
+                logger.debug(f"\t\t{k}: {v}")
+            logger.debug("\t-------")
+        logger.debug("===========")
 
         if self.streaming:
             inner_completion = ""

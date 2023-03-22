@@ -26,6 +26,7 @@ from tools.gpu import (
 from handlers.base import BaseHandler, FileHandler, FileType
 from handlers.image import ImageCaptioning
 from handlers.dataframe import CsvToDataframe
+from logger import logger
 
 app = FastAPI()
 
@@ -34,14 +35,14 @@ toolsets: List[BaseToolSet] = [
     Terminal(),
     CodeEditor(),
     RequestsGet(),
-    Text2Image("cuda"),
-    ImageEditing("cuda"),
-    InstructPix2Pix("cuda"),
-    VisualQuestionAnswering("cuda"),
+    # Text2Image("cuda"),
+    # ImageEditing("cuda"),
+    # InstructPix2Pix("cuda"),
+    # VisualQuestionAnswering("cuda"),
 ]
 
 handlers: Dict[FileType, BaseHandler] = {
-    FileType.IMAGE: ImageCaptioning("cuda"),
+    # FileType.IMAGE: ImageCaptioning("cuda"),
     FileType.DATAFRAME: CsvToDataframe(),
 }
 
@@ -74,16 +75,16 @@ async def command(request: Request) -> Response:
     files = request.files
     key = request.key
 
-    print("=============== Running =============")
-    print("Inputs:", query, files)
+    logger.info("=============== Running =============")
+    logger.info(f"Query: {query}, Files: {files}")
     executor = agent_manager.get_or_create_executor(key)
 
-    print("======>Previous memory:\n %s" % executor.memory)
+    logger.info(f"======> Previous memory:\n\t{executor.memory}")
 
     # TODO: exit conversation
     promptedQuery = "\n".join([file_handler.handle(file) for file in files])
     promptedQuery += query
-    print("======>Prompted Text:\n %s" % promptedQuery)
+    logger.info(f"======> Prompted Text:\n\t{promptedQuery}")
 
     try:
         res = executor({"input": promptedQuery})

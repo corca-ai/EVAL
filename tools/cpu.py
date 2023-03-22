@@ -101,7 +101,7 @@ class CodeEditor(BaseToolSet):
     @tool(
         name="CodeEditor.PATCH",
         description="Correct the error throught the code patch if an error occurs. "
-        "Input should be list of filename, line number, new line (Be sure to consider indentations.) Seperated by -||-."
+        "Input is a list of patches. The patch is separated by \\n.The patch consists of a file name, line number, and new code. It is seperated by -||-. "
         "ex. \"test.py-||-1-||-print('hello world')\ntest.py-||-2-||-print('hello world')\n\" "
         "and the output will be success or error message. ",
     )

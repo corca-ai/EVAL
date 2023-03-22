@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 import subprocess
 
 from tools.base import tool, BaseToolSet, ToolScope, SessionGetter
-from editor import CodePatcher, CodeReader
+from editor import CodePatcher, CodeReader, CodeWriter
 from logger import logger
 
 
@@ -61,26 +61,43 @@ class CodeEditor(BaseToolSet):
         return output
 
     @tool(
-        name="CodeEditor.WRITE",
-        description="Write code to create a new tool. "
-        "You must check the file's contents before writing. This tool only supports append code.  "
-        "If the code is completed, use the Terminal tool to execute it, if not, append the code through the CodeEditor tool. "
-        "Input should be filename and code. "
+        name="CodeEditor.APPEND",
+        description="Append code to the existing file. "
+        "If the code is completed, use the Terminal tool to execute it, if not, append the code through the this tool. "
+        "Input should be filename and code to append. "
+        "Input code must be the code that should be appended, NOT whole code. "
         "ex. test.py\nprint('hello world')\n "
         "and the output will be last 3 line.",
     )
     def write(self, inputs: str) -> str:
-        filename, code = inputs.split("\n", 1)
-
         try:
-            with open(filename, "a") as f:
-                f.write(code)
+            code = CodeWriter.append(inputs)
             output = "Last 3 line was:\n" + "\n".join(code.split("\n")[-3:])
         except Exception as e:
             output = str(e)
 
         logger.debug(
-            f"\nProcessed CodeEditor, Input Codes: {code} " f"Output Answer: {output}"
+            f"\nProcessed CodeEditor, Input: {inputs} " f"Output Answer: {output}"
+        )
+        return output
+
+    @tool(
+        name="CodeEditor.WRITE",
+        description="Write code to create a new tool. "
+        "If the code is completed, use the Terminal tool to execute it, if not, append the code through the CodeEditor.APPEND tool. "
+        "Input should be filename and code. "
+        "ex. test.py\nprint('hello world')\n "
+        "and the output will be last 3 line.",
+    )
+    def write(self, inputs: str) -> str:
+        try:
+            code = CodeWriter.write(inputs)
+            output = "Last 3 line was:\n" + "\n".join(code.split("\n")[-3:])
+        except Exception as e:
+            output = str(e)
+
+        logger.debug(
+            f"\nProcessed CodeEditor, Input: {inputs} " f"Output Answer: {output}"
         )
         return output
 
@@ -91,8 +108,8 @@ class CodeEditor(BaseToolSet):
             seperator=CodePatcher.separator.replace("\n", "\\n")
         )
         + "Each patch has to be formatted like below.\n"
-        "<filepath>|<start_line>,<start_col>|<end_line>,<end_col>|<content>"
-        "Code between start and end will be replaced with content. "
+        "<filepath>|<start_line>,<start_col>|<end_line>,<end_col>|<new_code>"
+        "Code between start and end will be replaced with new_code. "
         "The output will be written/deleted bytes or error message. ",
     )
     def patch(self, patches: str) -> str:

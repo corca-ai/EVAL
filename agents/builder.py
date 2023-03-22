@@ -61,7 +61,7 @@ class AgentBuilder:
             llm=self.llm,
             tools=[
                 *self.global_tools,
-                ToolsFactory.create_per_session_tools(
+                *ToolsFactory.create_per_session_tools(
                     self.toolsets
                 ),  # for names and descriptions
             ],

@@ -24,7 +24,7 @@ def tool(
     return decorator
 
 
-class ToolWrapper(Callable):
+class ToolWrapper:
     def __init__(self, name: str, description: str, scope: ToolScope, func):
         self.name = name
         self.description = description

@@ -1,5 +1,6 @@
 from typing import Dict, List, TypedDict
 import re
+import uvicorn
 
 from fastapi import FastAPI
 from pydantic import BaseModel
@@ -7,25 +8,25 @@ from pydantic import BaseModel
 from s3 import upload
 from env import settings
 
-from prompts.error import ERROR_PROMPT
-from agents.manager import AgentManager
-from tools.base import BaseToolSet
-from tools.cpu import (
+from core.prompts.error import ERROR_PROMPT
+from core.agents.manager import AgentManager
+from core.tools.base import BaseToolSet
+from core.tools.cpu import (
     Terminal,
     CodeEditor,
     RequestsGet,
     WineDB,
     ExitConversation,
 )
-from tools.gpu import (
+from core.tools.gpu import (
     ImageEditing,
     InstructPix2Pix,
     Text2Image,
     VisualQuestionAnswering,
 )
-from handlers.base import BaseHandler, FileHandler, FileType
-from handlers.image import ImageCaptioning
-from handlers.dataframe import CsvToDataframe
+from core.handlers.base import BaseHandler, FileHandler, FileType
+from core.handlers.image import ImageCaptioning
+from core.handlers.dataframe import CsvToDataframe
 from logger import logger
 
 app = FastAPI()
@@ -36,14 +37,14 @@ toolsets: List[BaseToolSet] = [
     CodeEditor(),
     RequestsGet(),
     ExitConversation(),
-    Text2Image("cuda"),
-    ImageEditing("cuda"),
-    InstructPix2Pix("cuda"),
-    VisualQuestionAnswering("cuda"),
+    # Text2Image("cuda"),
+    # ImageEditing("cuda"),
+    # InstructPix2Pix("cuda"),
+    # VisualQuestionAnswering("cuda"),
 ]
 
 handlers: Dict[FileType, BaseHandler] = {
-    FileType.IMAGE: ImageCaptioning("cuda"),
+    # FileType.IMAGE: ImageCaptioning("cuda"),
     FileType.DATAFRAME: CsvToDataframe(),
 }
 
@@ -107,3 +108,7 @@ async def command(request: Request) -> Response:
         "files": [upload(image) for image in images]
         + [upload(dataframe) for dataframe in dataframes],
     }
+
+
+def serve():
+    uvicorn.run("api.main:app", host="0.0.0.0", port=settings["PORT"])

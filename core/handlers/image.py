@@ -5,9 +5,9 @@ from transformers import (
     BlipForConditionalGeneration,
 )
 
-from prompts.file import IMAGE_PROMPT
+from core.prompts.file import IMAGE_PROMPT
 
-from handlers.base import BaseHandler
+from .base import BaseHandler
 
 
 class ImageCaptioning(BaseHandler):

@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 import subprocess
 
-from tools.base import tool, BaseToolSet, ToolScope, SessionGetter
+from .base import tool, BaseToolSet, ToolScope, SessionGetter
 from logger import logger
 
 

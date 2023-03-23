@@ -7,6 +7,7 @@ load_dotenv()
 
 
 class DotEnv(TypedDict):
+    PORT: int
     LOG_LEVEL: str  # optional
     BOT_NAME: str
     AWS_ACCESS_KEY_ID: str
@@ -22,6 +23,7 @@ class DotEnv(TypedDict):
 
 
 settings: DotEnv = {
+    "PORT": int(os.getenv("PORT", 8000)),
     "LOG_LEVEL": os.getenv("LOG_LEVEL", "INFO"),
     "BOT_NAME": os.getenv("BOT_NAME", "Orca"),
     "AWS_ACCESS_KEY_ID": os.getenv("AWS_ACCESS_KEY_ID"),

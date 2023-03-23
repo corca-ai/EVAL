@@ -3,7 +3,7 @@ from typing import Dict
 
 from langchain.output_parsers.base import BaseOutputParser
 
-from prompts.input import EVAL_FORMAT_INSTRUCTIONS
+from core.prompts.input import EVAL_FORMAT_INSTRUCTIONS
 
 
 class EvalOutputParser(BaseOutputParser):

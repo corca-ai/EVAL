@@ -20,7 +20,7 @@ from langchain.schema import (
 )
 from langchain.tools.base import BaseTool
 
-from prompts.input import EVAL_TOOL_RESPONSE
+from core.prompts.input import EVAL_TOOL_RESPONSE
 
 
 class ConversationalChatAgent(Agent):

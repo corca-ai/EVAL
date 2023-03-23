@@ -9,6 +9,7 @@ services:
       context: .
     volumes: # if you want to decrease your model download time, use this.
       - ../.cache/huggingface/:/root/.cache/huggingface/
+      - ./static/:/app/static/
     ports:
       - "8000:8000"
     env_file:

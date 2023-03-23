@@ -3,9 +3,10 @@ import re
 import uvicorn
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+
 from pydantic import BaseModel
 
-from s3 import upload
 from env import settings
 
 from core.prompts.error import ERROR_PROMPT
@@ -27,24 +28,28 @@ from core.tools.gpu import (
 from core.handlers.base import BaseHandler, FileHandler, FileType
 from core.handlers.image import ImageCaptioning
 from core.handlers.dataframe import CsvToDataframe
+from core.upload import StaticUploader
+
 from logger import logger
 
 app = FastAPI()
 
+app.mount("/static", StaticFiles(directory=StaticUploader.STATIC_DIR), name="static")
+uploader = StaticUploader.from_settings(settings)
 
 toolsets: List[BaseToolSet] = [
     Terminal(),
     CodeEditor(),
     RequestsGet(),
     ExitConversation(),
-    # Text2Image("cuda"),
-    # ImageEditing("cuda"),
-    # InstructPix2Pix("cuda"),
-    # VisualQuestionAnswering("cuda"),
+    Text2Image("cuda"),
+    ImageEditing("cuda"),
+    InstructPix2Pix("cuda"),
+    VisualQuestionAnswering("cuda"),
 ]
 
 handlers: Dict[FileType, BaseHandler] = {
-    # FileType.IMAGE: ImageCaptioning("cuda"),
+    FileType.IMAGE: ImageCaptioning("cuda"),
     FileType.DATAFRAME: CsvToDataframe(),
 }
 
@@ -100,13 +105,11 @@ async def command(request: Request) -> Response:
         except Exception as e:
             return {"response": str(e), "files": []}
 
-    images = re.findall("(image/\S*png)", res["output"])
-    dataframes = re.findall("(dataframe/\S*csv)", res["output"])
+    files = re.findall("(image/\S*png)|(dataframe/\S*csv)", res["output"])
 
     return {
         "response": res["output"],
-        "files": [upload(image) for image in images]
-        + [upload(dataframe) for dataframe in dataframes],
+        "files": [uploader.upload(file) for file in files],
     }
 
 

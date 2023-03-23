@@ -105,11 +105,13 @@ async def command(request: Request) -> Response:
         except Exception as e:
             return {"response": str(e), "files": []}
 
-    files = re.findall("(image/\S*png)|(dataframe/\S*csv)", res["output"])
+    images = re.findall("(image/\S*png)", res["output"])
+    dataframes = re.findall("(dataframe/\S*csv)", res["output"])
 
     return {
         "response": res["output"],
-        "files": [uploader.upload(file) for file in files],
+        "files": [uploader.upload(image) for image in images]
+        + [uploader.upload(dataframe) for dataframe in dataframes],
     }
 
 

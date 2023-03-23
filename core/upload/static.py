@@ -19,6 +19,7 @@ class StaticUploader(AbstractUploader):
         return f"{self.server}/{uploaded_path}"
 
     def upload(self, filepath: str):
-        uploaded_path = os.path.join(StaticUploader.STATIC_DIR, filepath)
-        shutil.copy(filepath, uploaded_path)
-        return f"{self.server}/{uploaded_path}"
+        upload_path = os.path.join(StaticUploader.STATIC_DIR, filepath)
+        os.makedirs(os.path.dirname(upload_path), exist_ok=True)
+        shutil.copy(filepath, upload_path)
+        return f"{self.server}/{upload_path}"

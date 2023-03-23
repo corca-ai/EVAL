@@ -43,52 +43,37 @@ We also don't know what tools EVAL will create. Every day, It will create the ri
 
 ## Usage
 
-1. S3 Settings
-2. environments settings
-3. `docker-compose up -d`
-
-### S3
-
-1. Create a bucket.
-2. Turn off the "Block all public access" setting for the bucket. ![image](assets/block_public_access.png)
-3. Add the following text to Bucket Policy.
-   ```json
-   {
-     "Version": "2012-10-17",
-     "Statement": [
-       {
-         "Sid": "AllowPublicRead",
-         "Effect": "Allow",
-         "Principal": {
-           "AWS": "*"
-         },
-         "Action": "s3:GetObject",
-         "Resource": "arn:aws:s3:::{your-bucket-name}/*"
-       }
-     ]
-   }
-   ```
+1. environments settings
+2. `docker-compose up -d`
 
 ### Environment
 
-These environmental variables are essential, so please set them.
+You need to write some environment variables in the `.env` file. Refer [.env.example](.env.example) if you don't know how to format it.
 
-```
-BOT_NAME: your custom bot name
-OPENAI_API_KEY: openai api key
-AWS_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY
-AWS_REGION
-AWS_S3_BUCKET
-```
+**Mandatory**
 
-These environment variables are necessary to use the following tools:  
-If you want to use it, set it up, and if you don't need it, you don't have to set it up.
+Manatory envs are required in order to serve EVAL.
 
-```
-SERPAPI_API_KEY: need to append google search tool
-BING_SEARCH_URL, BING_SUBSCRIPTION_KEY: need to append bing search tool
-```
+- `OPENAI_API_KEY` - OpenAI api key
+
+**Optional**
+
+Each optional env has default value, so you don't need to set unless you want to change it.
+
+- `PORT` - port (default: 8000)
+- `SERVER` - server address (default: http://localhost:8000)
+- `LOG_LEVEL` - INFO | DEBUG (default: INFO)
+- `BOT_NAME` - give it a name! (default: Orda)
+
+**For More Tools**
+
+Some tools requires environment variables. Set envs depend on which tools you want to use.
+
+- Google search tool
+  - `SERPAPI_API_KEY`
+- Bing search tool
+  - `BING_SEARCH_URL`
+  - `BING_SUBSCRIPTION_KEY`
 
 ## TODO
 

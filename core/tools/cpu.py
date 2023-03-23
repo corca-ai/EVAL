@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 
 import subprocess
 
+from core.editor import CodePatcher, CodeReader, CodeWriter
 from .base import tool, BaseToolSet, ToolScope, SessionGetter
 from logger import logger
 
@@ -48,21 +49,8 @@ class CodeEditor(BaseToolSet):
         "and the output will be code. ",
     )
     def read(self, inputs: str) -> str:
-        filename, line = inputs.split(",")
-        line = line.split("-")
-        if len(line) == 1:
-            line = int(line[0])
-        else:
-            line = [int(i) for i in line]
-
         try:
-            with open(filename, "r") as f:
-                code = f.readlines()
-            if isinstance(line, int):
-                code = code[line - 1]
-            else:
-                code = "".join(code[line[0] - 1 : line[1]])
-            output = code
+            output = CodeReader.read(inputs)
         except Exception as e:
             output = str(e)
 
@@ -73,48 +61,64 @@ class CodeEditor(BaseToolSet):
         return output
 
     @tool(
-        name="CodeEditor.WRITE",
-        description="Write code to create a new tool. "
-        "You must check the file's contents before writing. This tool only supports append code.  "
-        "If the code is completed, use the Terminal tool to execute it, if not, append the code through the CodeEditor tool. "
-        "Input should be filename and code. "
+        name="CodeEditor.APPEND",
+        description="Append code to the existing file. "
+        "If the code is completed, use the Terminal tool to execute it, if not, append the code through the this tool. "
+        "Input should be filename and code to append. "
+        "Input code must be the code that should be appended, NOT whole code. "
         "ex. test.py\nprint('hello world')\n "
         "and the output will be last 3 line.",
     )
     def write(self, inputs: str) -> str:
-        filename, code = inputs.split("\n", 1)
-
         try:
-            with open(filename, "a") as f:
-                f.write(code)
+            code = CodeWriter.append(inputs)
             output = "Last 3 line was:\n" + "\n".join(code.split("\n")[-3:])
         except Exception as e:
             output = str(e)
 
         logger.debug(
-            f"\nProcessed CodeEditor, Input Codes: {code} " f"Output Answer: {output}"
+            f"\nProcessed CodeEditor, Input: {inputs} " f"Output Answer: {output}"
+        )
+        return output
+
+    @tool(
+        name="CodeEditor.WRITE",
+        description="Write code to create a new tool. "
+        "If the code is completed, use the Terminal tool to execute it, if not, append the code through the CodeEditor.APPEND tool. "
+        "Input should be filename and code. "
+        "ex. test.py\nprint('hello world')\n "
+        "and the output will be last 3 line.",
+    )
+    def write(self, inputs: str) -> str:
+        try:
+            code = CodeWriter.write(inputs)
+            output = "Last 3 line was:\n" + "\n".join(code.split("\n")[-3:])
+        except Exception as e:
+            output = str(e)
+
+        logger.debug(
+            f"\nProcessed CodeEditor, Input: {inputs} " f"Output Answer: {output}"
         )
         return output
 
     @tool(
         name="CodeEditor.PATCH",
-        description="Correct the error throught the code patch if an error occurs. "
-        "Input is a list of patches. The patch is separated by \\n.The patch consists of a file name, line number, and new code. It is seperated by -||-. "
-        "ex. \"test.py-||-1-||-print('hello world')\ntest.py-||-2-||-print('hello world')\n\" "
-        "and the output will be success or error message. ",
+        description="Patch the code to correct the error if an error occurs or to improve it. "
+        "Input is a list of patches. The patch is separated by {seperator}. ".format(
+            seperator=CodePatcher.separator.replace("\n", "\\n")
+        )
+        + "Each patch has to be formatted like below.\n"
+        "<filepath>|<start_line>,<start_col>|<end_line>,<end_col>|<new_code>"
+        "Code between start and end will be replaced with new_code. "
+        "The output will be written/deleted bytes or error message. ",
     )
     def patch(self, patches: str) -> str:
-        for patch in patches.split("\n"):
-            filename, line_number, new_line = patch.split("-||-")  # TODO: fix this
-            try:
-                with open(filename, "r") as f:
-                    lines = f.readlines()
-                lines[int(line_number) - 1] = new_line + "\n"
-                with open(filename, "w") as f:
-                    f.writelines(lines)
-                output = "success"
-            except Exception as e:
-                output = str(e)
+        try:
+            w, d = CodePatcher.patch(patches)
+            output = f"successfully wrote {w}, deleted {d}"
+        except Exception as e:
+            output = str(e)
+
         logger.debug(
             f"\nProcessed CodeEditor, Input Patch: {patches} "
             f"Output Answer: {output}"

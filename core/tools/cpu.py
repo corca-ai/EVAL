@@ -9,8 +9,8 @@ from bs4 import BeautifulSoup
 
 import subprocess
 
-from tools.base import tool, BaseToolSet, ToolScope, SessionGetter
-from editor import CodePatcher, CodeReader, CodeWriter
+from core.editor import CodePatcher, CodeReader, CodeWriter
+from .base import tool, BaseToolSet, ToolScope, SessionGetter
 from logger import logger
 
 

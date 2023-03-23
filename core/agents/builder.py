@@ -1,15 +1,15 @@
 from langchain.chat_models.base import BaseChatModel
 from langchain.output_parsers.base import BaseOutputParser
 
-from prompts.input import EVAL_PREFIX, EVAL_SUFFIX
 from env import settings
 
-from tools.base import BaseToolSet
-from tools.factory import ToolsFactory
+from core.prompts.input import EVAL_PREFIX, EVAL_SUFFIX
+from core.tools.base import BaseToolSet
+from core.tools.factory import ToolsFactory
 
-from agents.llm import ChatOpenAI
-from agents.chat_agent import ConversationalChatAgent
-from agents.parser import EvalOutputParser
+from .llm import ChatOpenAI
+from .chat_agent import ConversationalChatAgent
+from .parser import EvalOutputParser
 
 
 class AgentBuilder:

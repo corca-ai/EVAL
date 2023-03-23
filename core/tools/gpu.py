@@ -23,7 +23,7 @@ from diffusers import EulerAncestralDiscreteScheduler
 from utils import get_new_image_name
 from logger import logger
 
-from tools.base import tool, BaseToolSet
+from .base import tool, BaseToolSet
 
 
 class MaskFormer(BaseToolSet):

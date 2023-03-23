@@ -3,7 +3,7 @@ from langchain.agents import load_tools
 from langchain.agents.tools import BaseTool
 from langchain.llms.base import BaseLLM
 
-from tools.base import BaseToolSet, SessionGetter
+from .base import BaseToolSet, SessionGetter
 
 
 class ToolsFactory:

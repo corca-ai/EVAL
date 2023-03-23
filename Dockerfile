@@ -15,9 +15,12 @@ ENV PATH "/root/.local/bin:$PATH"
 COPY pyproject.toml .
 COPY poetry.lock .
 
+COPY api api
 RUN poetry env use 3.10
 RUN poetry install --with tools
 
 COPY . .
 
-ENTRYPOINT ["poetry", "run", "python3", "-m", "uvicorn", "main:app", "--host=0.0.0.0", "--port=8000"]
+ENV PORT 8000
+
+ENTRYPOINT ["poetry", "run", "serve"]

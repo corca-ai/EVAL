@@ -15,6 +15,7 @@ ENV PATH "/root/.local/bin:$PATH"
 COPY pyproject.toml .
 COPY poetry.lock .
 
+COPY api api
 RUN poetry env use 3.10
 RUN poetry install --with tools
 

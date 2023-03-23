@@ -1,8 +1,8 @@
 import pandas as pd
 
-from prompts.file import DATAFRAME_PROMPT
+from core.prompts.file import DATAFRAME_PROMPT
 
-from handlers.base import BaseHandler
+from .base import BaseHandler
 
 
 class CsvToDataframe(BaseHandler):

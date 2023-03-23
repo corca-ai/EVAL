@@ -1,4 +1,4 @@
-from typing import Optional, Callable, Tuple
+from typing import Callable, Tuple
 from enum import Enum
 
 from langchain.agents.tools import Tool, BaseTool

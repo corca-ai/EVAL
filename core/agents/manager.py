@@ -1,14 +1,14 @@
-from typing import Dict, Any
+from typing import Dict
 
 from langchain.agents.tools import BaseTool
 from langchain.agents.agent import Agent, AgentExecutor
 from langchain.chains.conversation.memory import ConversationBufferMemory
 from langchain.memory.chat_memory import BaseChatMemory
 
-from tools.base import BaseToolSet
-from tools.factory import ToolsFactory
+from core.tools.base import BaseToolSet
+from core.tools.factory import ToolsFactory
 
-from agents.builder import AgentBuilder
+from .builder import AgentBuilder
 
 
 class AgentManager:

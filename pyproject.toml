@@ -4,7 +4,10 @@ version = "0.1.0"
 description = ""
 authors = ["Taeho Lee <taeho@corca.ai>", "Chung Hwan Han <hanch@corca.ai>"]
 readme = "README.md"
+packages = [{include = "api"},{include = "core"}]
 
+[tool.poetry.scripts]
+serve = "api.main:serve"
 
 [tool.poetry.dependencies]
 python = "^3.10"

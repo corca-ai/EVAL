@@ -20,4 +20,6 @@ RUN poetry install --with tools
 
 COPY . .
 
-ENTRYPOINT ["poetry", "run", "python3", "-m", "uvicorn", "main:app", "--host=0.0.0.0", "--port=8000"]
+ENV PORT 8000
+
+ENTRYPOINT ["poetry", "run", "serve"]

@@ -1,7 +1,8 @@
 """
-read protocol:
+write protocol:
 
-<filepath>|<start line>-<end line>
+<filepath>
+<content>
 """
 
 

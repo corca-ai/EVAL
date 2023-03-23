@@ -63,7 +63,7 @@ Each optional env has default value, so you don't need to set unless you want to
 - `PORT` - port (default: 8000)
 - `SERVER` - server address (default: http://localhost:8000)
 - `LOG_LEVEL` - INFO | DEBUG (default: INFO)
-- `BOT_NAME` - give it a name! (default: Orda)
+- `BOT_NAME` - give it a name! (default: Orca)
 
 **For More Tools**
 

@@ -23,6 +23,8 @@ boto3 = "^1.26.94"
 uvicorn = "^0.21.1"
 accelerate = "^0.17.1"
 transformers = {git = "https://github.com/huggingface/transformers.git", rev = "main"}
+sentencepiece = "^0.1.97"
+bitsandbytes = "^0.37.2"
 
 [tool.poetry.group.tools]
 optional = true

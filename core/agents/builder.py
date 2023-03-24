@@ -1,5 +1,7 @@
 from langchain.chat_models.base import BaseChatModel
 from langchain.output_parsers.base import BaseOutputParser
+from langchain.llms.huggingface_pipeline import HuggingFacePipeline
+from langchain.agents.conversational.base import ConversationalAgent
 
 from env import settings
 
@@ -20,7 +22,15 @@ class AgentBuilder:
         self.toolsets = toolsets
 
     def build_llm(self):
-        self.llm = ChatOpenAI(temperature=0)
+        self.llm = HuggingFacePipeline.from_model_id(
+            model_id="chavinlo/alpaca-native",
+            task="text-generation",
+            model_kwargs={
+                "load_in_8bit": True,
+                "device_map": "auto",
+                "max_length": 8192,
+            },
+        )
 
     def build_parser(self):
         self.parser = EvalOutputParser()
@@ -57,7 +67,7 @@ class AgentBuilder:
         if self.global_tools is None:
             raise ValueError("Global tools must be initialized before agent")
 
-        return ConversationalChatAgent.from_llm_and_tools(
+        return ConversationalAgent.from_llm_and_tools(
             llm=self.llm,
             tools=[
                 *self.global_tools,
@@ -65,7 +75,4 @@ class AgentBuilder:
                     self.toolsets
                 ),  # for names and descriptions
             ],
-            system_message=EVAL_PREFIX.format(bot_name=settings["BOT_NAME"]),
-            human_message=EVAL_SUFFIX.format(bot_name=settings["BOT_NAME"]),
-            output_parser=self.parser,
         )

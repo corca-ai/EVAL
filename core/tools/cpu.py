@@ -94,7 +94,7 @@ class CodeEditor(BaseToolSet):
         name="CodeEditor.WRITE",
         description="Write code to create a new tool. "
         "If the code is completed, use the Terminal tool to execute it, if not, append the code through the CodeEditor.APPEND tool. "
-        "Input should be filename and code. Filename should be start with './playground/'. "
+        "Input should be filename and code. This file must be in playground folder. "
         "ex. test.py\nprint('hello world')\n "
         "and the output will be last 3 line.",
     )

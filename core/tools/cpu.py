@@ -18,7 +18,8 @@ class Terminal(BaseToolSet):
     @tool(
         name="Terminal",
         description="Executes commands in a terminal."
-        "You can install packages with pip, apt, etc."
+        "If linux errno occurs, we have to solve the problem with the terminal. "
+        "It can't execute interactive operations or blocking operations. "
         "Input should be valid commands, "
         "and the output will be any output from running that command.",
     )
@@ -33,6 +34,9 @@ class Terminal(BaseToolSet):
             ).stdout.decode()
         except Exception as e:
             output = str(e)
+
+        if len(output) > 1000:
+            output = output[:1000] + "..."
 
         logger.debug(
             f"\nProcessed Terminal, Input Commands: {commands} "
@@ -69,15 +73,20 @@ class CodeEditor(BaseToolSet):
         "ex. test.py\nprint('hello world')\n "
         "and the output will be last 3 line.",
     )
-    def write(self, inputs: str) -> str:
+    def append(self, inputs: str) -> str:
         try:
             code = CodeWriter.append(inputs)
-            output = "Last 3 line was:\n" + "\n".join(code.split("\n")[-3:])
+            output = (
+                "Last 3 line was:\n"
+                + "\n".join(code.split("\n")[-3:])
+                + "\nYou can use CodeEditor.APPEND tool to append the code if it is not completed."
+            )
         except Exception as e:
             output = str(e)
 
         logger.debug(
-            f"\nProcessed CodeEditor, Input: {inputs} " f"Output Answer: {output}"
+            f"\nProcessed CodeEditor.APPEND, Input: {inputs} "
+            f"Output Answer: {output}"
         )
         return output
 
@@ -85,19 +94,23 @@ class CodeEditor(BaseToolSet):
         name="CodeEditor.WRITE",
         description="Write code to create a new tool. "
         "If the code is completed, use the Terminal tool to execute it, if not, append the code through the CodeEditor.APPEND tool. "
-        "Input should be filename and code. "
+        "Input should be filename and code. Filename should be start with './playground/'. "
         "ex. test.py\nprint('hello world')\n "
         "and the output will be last 3 line.",
     )
     def write(self, inputs: str) -> str:
         try:
             code = CodeWriter.write(inputs)
-            output = "Last 3 line was:\n" + "\n".join(code.split("\n")[-3:])
+            output = (
+                "Last 3 line was:\n"
+                + "\n".join(code.split("\n")[-3:])
+                + "\nYou can use CodeEditor.APPEND tool to append the code if it is not completed."
+            )
         except Exception as e:
             output = str(e)
 
         logger.debug(
-            f"\nProcessed CodeEditor, Input: {inputs} " f"Output Answer: {output}"
+            f"\nProcessed CodeEditor.WRITE, Input: {inputs} " f"Output Answer: {output}"
         )
         return output
 
@@ -120,7 +133,7 @@ class CodeEditor(BaseToolSet):
             output = str(e)
 
         logger.debug(
-            f"\nProcessed CodeEditor, Input Patch: {patches} "
+            f"\nProcessed CodeEditor.PATCH, Input Patch: {patches} "
             f"Output Answer: {output}"
         )
         return output
@@ -142,7 +155,7 @@ class CodeEditor(BaseToolSet):
             output = str(e)
 
         logger.debug(
-            f"\nProcessed CodeEditor, Input filename: {inputs} "
+            f"\nProcessed CodeEditor.DELETE, Input filename: {inputs} "
             f"Output Answer: {output}"
         )
         return output

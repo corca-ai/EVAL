@@ -11,7 +11,9 @@ services:
       - ../.cache/huggingface/:/root/.cache/huggingface/
       - ./static/:/app/static/
     ports:
-      - "8000:8000"
+      - "7500:7500"
+      - "7501:7501"
+      - "8000:8000" # eval port
     env_file:
       - .env
     deploy:

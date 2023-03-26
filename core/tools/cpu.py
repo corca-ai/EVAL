@@ -45,7 +45,7 @@ class CodeEditor(BaseToolSet):
     @tool(
         name="CodeEditor.READ",
         description="Read and understand code. "
-        "Input should be filename and line number group. ex. test.py,1-10 "
+        f"Input should be filename and line number group. ex. test.py|1-10 "
         "and the output will be code. ",
     )
     def read(self, inputs: str) -> str:
@@ -56,6 +56,26 @@ class CodeEditor(BaseToolSet):
 
         logger.debug(
             f"\nProcessed CodeEditor.READ, Input Commands: {inputs} "
+            f"Output Answer: {output}"
+        )
+        return output
+
+    @tool(
+        name="CodeEditor.SUMMARY",
+        description="Summary code. "
+        "Read the code structured into a tree. "
+        "If you set specific line, it will show the code from the specific line. "
+        "Input should be filename, depth, and specific line if you want. ex. test.py|2 or test.py|3|print('hello world') "
+        "and the output will be list of (line number: code). ",
+    )
+    def summary(self, inputs: str) -> str:
+        try:
+            output = CodeReader.summary(inputs)
+        except Exception as e:
+            output = str(e)
+
+        logger.debug(
+            f"\nProcessed CodeEditor.SUMMARY, Input Commands: {inputs} "
             f"Output Answer: {output}"
         )
         return output

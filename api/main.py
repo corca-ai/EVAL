@@ -2,6 +2,7 @@ from typing import Dict, List, TypedDict
 import re
 import uvicorn
 
+import torch
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
@@ -37,21 +38,27 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory=StaticUploader.STATIC_DIR), name="static")
 uploader = StaticUploader.from_settings(settings)
 
-toolsets: List[BaseToolSet] = [
-    Terminal(),
-    CodeEditor(),
-    RequestsGet(),
-    ExitConversation(),
-    Text2Image("cuda"),
-    ImageEditing("cuda"),
-    InstructPix2Pix("cuda"),
-    VisualQuestionAnswering("cuda"),
-]
+toolsets: List[BaseToolSet] = (
+    [
+        Terminal(),
+        CodeEditor(),
+        RequestsGet(),
+        ExitConversation(),
+    ]
+    + [
+        Text2Image("cuda"),
+        ImageEditing("cuda"),
+        InstructPix2Pix("cuda"),
+        VisualQuestionAnswering("cuda"),
+    ]
+    if torch.cuda.is_available()
+    else []
+)
 
-handlers: Dict[FileType, BaseHandler] = {
-    FileType.IMAGE: ImageCaptioning("cuda"),
-    FileType.DATAFRAME: CsvToDataframe(),
-}
+handlers: Dict[FileType, BaseHandler] = {}
+handlers[FileType.DATAFRAME] = CsvToDataframe()
+if torch.cuda.is_available():
+    handlers[FileType.IMAGE] = ImageCaptioning("cuda")
 
 if settings["WINEDB_HOST"] and settings["WINEDB_PASSWORD"]:
     toolsets.append(WineDB())

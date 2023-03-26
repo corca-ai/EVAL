@@ -4,6 +4,8 @@ write protocol:
 <filepath>
 <content>
 """
+import os
+from pathlib import Path
 
 
 class WriteCommand:
@@ -19,6 +21,13 @@ class WriteCommand:
         return self
 
     def execute(self) -> str:
+        # make sure the directory exists
+        if not str(Path(self.filepath).resolve()).startswith(
+            str(Path("playground/").resolve())
+        ):
+            return "You can't write file outside of playground folder."
+
+        os.makedirs(os.path.dirname(self.filepath), exist_ok=True)
         with open(self.filepath, self.mode) as f:
             f.write(self.content)
         return self.content

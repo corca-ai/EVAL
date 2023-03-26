@@ -9,6 +9,7 @@ os.makedirs("image", exist_ok=True)
 os.makedirs("audio", exist_ok=True)
 os.makedirs("video", exist_ok=True)
 os.makedirs("dataframe", exist_ok=True)
+os.makedirs("playground", exist_ok=True)
 
 
 def seed_everything(seed):

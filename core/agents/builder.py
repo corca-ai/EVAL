@@ -29,7 +29,7 @@ class AgentBuilder:
         if self.llm is None:
             raise ValueError("LLM must be initialized before tools")
 
-        toolnames = ["python_repl", "wikipedia"]
+        toolnames = ["wikipedia"]
 
         if settings["SERPAPI_API_KEY"]:
             toolnames.append("serpapi")
@@ -68,4 +68,5 @@ class AgentBuilder:
             system_message=EVAL_PREFIX.format(bot_name=settings["BOT_NAME"]),
             human_message=EVAL_SUFFIX.format(bot_name=settings["BOT_NAME"]),
             output_parser=self.parser,
+            max_iterations=30,
         )

@@ -44,9 +44,8 @@ class SyscallTracer:
             if not self.debugger:
                 break
 
-            self.process.syscall()
-
             try:
+                self.process.syscall()
                 event = self.process.waitSyscall()
             except ProcessExit as event:
                 if event.exitcode is not None:
@@ -109,7 +108,7 @@ class Terminal(BaseToolSet):
                 tracer.wait_until_stop_or_exit()
 
                 fp.seek(0)
-                output = fp.read()
+                output = fp.read().decode()
         except Exception as e:
             output = str(e)
 

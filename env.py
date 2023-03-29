@@ -12,6 +12,7 @@ class DotEnv(TypedDict):
     PORT: int
     SERVER: str
 
+    USE_GPU: bool
     LOG_LEVEL: str  # optional
     BOT_NAME: str  # optional
     AWS_ACCESS_KEY_ID: str  # optional
@@ -29,6 +30,7 @@ PORT = int(os.getenv("PORT", 8000))
 settings: DotEnv = {
     "PORT": PORT,
     "SERVER": os.getenv("SERVER", f"http://localhost:{PORT}"),
+    "USE_GPU": os.getenv("USE_GPU", "False").lower() == "true",
     "OPENAI_API_KEY": os.getenv("OPENAI_API_KEY"),
     "LOG_LEVEL": os.getenv("LOG_LEVEL", "INFO"),
     "BOT_NAME": os.getenv("BOT_NAME", "Orca"),

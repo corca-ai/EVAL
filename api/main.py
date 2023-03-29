@@ -40,22 +40,22 @@ uploader = StaticUploader.from_settings(settings)
 
 use_gpu = settings["USE_GPU"] and torch.cuda.is_available()
 
-toolsets: List[BaseToolSet] = (
-    [
-        Terminal(),
-        CodeEditor(),
-        RequestsGet(),
-        ExitConversation(),
-    ]
-    + [
-        Text2Image("cuda"),
-        ImageEditing("cuda"),
-        InstructPix2Pix("cuda"),
-        VisualQuestionAnswering("cuda"),
-    ]
-    if use_gpu
-    else []
-)
+toolsets: List[BaseToolSet] = [
+    Terminal(),
+    CodeEditor(),
+    RequestsGet(),
+    ExitConversation(),
+]
+
+if use_gpu:
+    toolsets.extend(
+        [
+            Text2Image("cuda"),
+            ImageEditing("cuda"),
+            InstructPix2Pix("cuda"),
+            VisualQuestionAnswering("cuda"),
+        ]
+    )
 
 handlers: Dict[FileType, BaseHandler] = {}
 handlers[FileType.DATAFRAME] = CsvToDataframe()

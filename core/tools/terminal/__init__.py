@@ -6,7 +6,7 @@ from tempfile import TemporaryFile
 from env import settings
 from logger import logger
 from core.tools.base import tool, BaseToolSet, ToolScope, SessionGetter
-from .syscall import SyscallTracer
+from core.tools.terminal.syscall import SyscallTracer
 
 
 class Terminal(BaseToolSet):
@@ -37,7 +37,8 @@ class Terminal(BaseToolSet):
 
                 tracer = SyscallTracer(process.pid)
                 tracer.attach()
-                tracer.wait_until_stop_or_exit()
+                exitcode, reason = tracer.wait_until_stop_or_exit()
+                logger.debug(f"Stopped terminal execution: {exitcode} {reason}")
 
                 fp.seek(0)
                 output = fp.read().decode()
@@ -55,5 +56,8 @@ class Terminal(BaseToolSet):
 
 
 if __name__ == "__main__":
-    o = Terminal().execute("echo 1; sleep 3", lambda: ("", None))
+    o = Terminal().execute(
+        "sleep 1; echo 1; sleep 2; echo 2; sleep 3; echo 3; sleep 10;",
+        lambda: ("", None),
+    )
     print(o)

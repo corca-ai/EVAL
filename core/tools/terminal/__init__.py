@@ -3,9 +3,10 @@ from typing import Dict, List
 
 from tempfile import TemporaryFile
 
+from env import settings
+from logger import logger
 from core.tools.base import tool, BaseToolSet, ToolScope, SessionGetter
 from .syscall import SyscallTracer
-from logger import logger
 
 
 class Terminal(BaseToolSet):
@@ -29,12 +30,12 @@ class Terminal(BaseToolSet):
                 process = subprocess.Popen(
                     commands,
                     shell=True,
+                    cwd=settings["PLAYGROUND_DIR"],
                     stdout=fp,
+                    stderr=fp,
                 )
 
-                tracer = self.sessions.get(session) or SyscallTracer(process.pid)
-                self.sessions[session] = tracer
-
+                tracer = SyscallTracer(process.pid)
                 tracer.attach()
                 tracer.wait_until_stop_or_exit()
 

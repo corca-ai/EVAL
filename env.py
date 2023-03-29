@@ -12,7 +12,8 @@ class DotEnv(TypedDict):
     PORT: int
     SERVER: str
 
-    USE_GPU: bool
+    USE_GPU: bool  # optional
+    PLAYGROUND_DIR: str  # optional
     LOG_LEVEL: str  # optional
     BOT_NAME: str  # optional
     AWS_ACCESS_KEY_ID: str  # optional
@@ -31,6 +32,7 @@ settings: DotEnv = {
     "PORT": PORT,
     "SERVER": os.getenv("SERVER", f"http://localhost:{PORT}"),
     "USE_GPU": os.getenv("USE_GPU", "False").lower() == "true",
+    "PLAYGROUND_DIR": os.getenv("PLAYGROUND_DIR", "playground"),
     "OPENAI_API_KEY": os.getenv("OPENAI_API_KEY"),
     "LOG_LEVEL": os.getenv("LOG_LEVEL", "INFO"),
     "BOT_NAME": os.getenv("BOT_NAME", "Orca"),

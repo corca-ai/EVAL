@@ -14,8 +14,8 @@ from core.prompts.error import ERROR_PROMPT
 from core.agents.manager import AgentManager
 from core.tools.base import BaseToolSet
 from core.tools.terminal import Terminal
+from core.tools.editor import CodeEditor
 from core.tools.cpu import (
-    CodeEditor,
     RequestsGet,
     WineDB,
     ExitConversation,

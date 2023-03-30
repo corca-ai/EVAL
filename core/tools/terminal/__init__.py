@@ -56,8 +56,12 @@ class Terminal(BaseToolSet):
 
 
 if __name__ == "__main__":
+    import time
+
     o = Terminal().execute(
         "sleep 1; echo 1; sleep 2; echo 2; sleep 3; echo 3; sleep 10;",
         lambda: ("", None),
     )
     print(o)
+
+    time.sleep(10)  # see if timer has reset

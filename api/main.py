@@ -104,7 +104,7 @@ async def command(request: Request) -> Response:
     try:
         res = executor({"input": promptedQuery})
     except Exception as e:
-        logger.error(f"error while processing request: ", str(e))
+        logger.error(f"error while processing request: {str(e)}")
         try:
             res = executor(
                 {

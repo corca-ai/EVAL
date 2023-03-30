@@ -15,8 +15,8 @@ from ptrace.tools import signal_to_exitcode
 
 
 class SyscallTimeoutException(Exception):
-    def __init__(self, *args: object) -> None:
-        super().__init__(*args)
+    def __init__(self, pid: int, *args) -> None:
+        super().__init__(f"deadline exceeded while waiting syscall for {pid}", *args)
 
 
 class SyscallTracer:
@@ -37,17 +37,20 @@ class SyscallTracer:
         self.process.detach()
         self.debugger.quit()
 
-    def wait_syscall_with_timeout(self, timeout: int):
+    def set_timer(self, timeout: int):
         def handler(signum, frame):
-            raise SyscallTimeoutException(
-                f"deadline exceeded while waiting syscall for {self.process.pid}"
-            )
+            raise SyscallTimeoutException(self.process.pid)
 
         signal.signal(signal.SIGALRM, handler)
         signal.alarm(timeout)
 
-        self.process.waitSyscall()
+    def reset_timer(self):
         signal.alarm(0)
+
+    def wait_syscall_with_timeout(self, timeout: int):
+        self.set_timer(timeout)
+        self.process.waitSyscall()
+        self.reset_timer()
 
     def wait_until_stop_or_exit(self) -> Tuple[Optional[int], str]:
         self.process.syscall()
@@ -60,12 +63,10 @@ class SyscallTracer:
             try:
                 self.wait_syscall_with_timeout(5)
             except ProcessExit as event:
-                print(event)
                 if event.exitcode is not None:
                     exitcode = event.exitcode
                 continue
             except ProcessSignal as event:
-                event.display()
                 event.process.syscall(event.signum)
                 exitcode = signal_to_exitcode(event.signum)
                 reason = event.reason
@@ -74,8 +75,8 @@ class SyscallTracer:
                 continue
             except ProcessExecution as event:
                 continue
-            except SyscallTimeoutException:
-                reason = "timeout"
+            except Exception as e:
+                reason = str(e)
                 break
 
             syscall = self.process.syscall_state.event(
@@ -96,5 +97,7 @@ class SyscallTracer:
 
             if syscall.result:
                 continue
+
+        self.reset_timer()
 
         return exitcode, reason

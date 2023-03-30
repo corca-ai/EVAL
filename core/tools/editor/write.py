@@ -6,13 +6,14 @@ write protocol:
 """
 import os
 from pathlib import Path
+from env import settings
 
 
 class WriteCommand:
     separator = "\n"
 
     def __init__(self, filepath: str, content: int):
-        self.filepath: str = filepath
+        self.filepath: str = str(Path(settings["PLAYGROUND_DIR"]) / Path(filepath))
         self.content: str = content
         self.mode: str = "w"
 
@@ -23,9 +24,9 @@ class WriteCommand:
     def execute(self) -> str:
         # make sure the directory exists
         if not str(Path(self.filepath).resolve()).startswith(
-            str(Path("playground/").resolve())
+            str(Path(settings["PLAYGROUND_DIR"]).resolve())
         ):
-            return "You can't write file outside of playground folder."
+            return "You can't write file outside of current directory."
 
         os.makedirs(os.path.dirname(self.filepath), exist_ok=True)
         with open(self.filepath, self.mode) as f:

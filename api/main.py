@@ -2,6 +2,7 @@ from typing import Dict, List, TypedDict
 import re
 import uvicorn
 
+import torch
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
@@ -12,9 +13,9 @@ from env import settings
 from core.prompts.error import ERROR_PROMPT
 from core.agents.manager import AgentManager
 from core.tools.base import BaseToolSet
+from core.tools.terminal import Terminal
+from core.tools.editor import CodeEditor
 from core.tools.cpu import (
-    Terminal,
-    CodeEditor,
     RequestsGet,
     WineDB,
     ExitConversation,
@@ -37,21 +38,29 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory=StaticUploader.STATIC_DIR), name="static")
 uploader = StaticUploader.from_settings(settings)
 
+use_gpu = settings["USE_GPU"] and torch.cuda.is_available()
+
 toolsets: List[BaseToolSet] = [
     Terminal(),
     CodeEditor(),
     RequestsGet(),
     ExitConversation(),
-    Text2Image("cuda"),
-    ImageEditing("cuda"),
-    InstructPix2Pix("cuda"),
-    VisualQuestionAnswering("cuda"),
 ]
 
-handlers: Dict[FileType, BaseHandler] = {
-    FileType.IMAGE: ImageCaptioning("cuda"),
-    FileType.DATAFRAME: CsvToDataframe(),
-}
+if use_gpu:
+    toolsets.extend(
+        [
+            Text2Image("cuda"),
+            ImageEditing("cuda"),
+            InstructPix2Pix("cuda"),
+            VisualQuestionAnswering("cuda"),
+        ]
+    )
+
+handlers: Dict[FileType, BaseHandler] = {}
+handlers[FileType.DATAFRAME] = CsvToDataframe()
+if use_gpu:
+    handlers[FileType.IMAGE] = ImageCaptioning("cuda")
 
 if settings["WINEDB_HOST"] and settings["WINEDB_PASSWORD"]:
     toolsets.append(WineDB())
@@ -95,7 +104,7 @@ async def command(request: Request) -> Response:
     try:
         res = executor({"input": promptedQuery})
     except Exception as e:
-        logger.error(f"error while processing request: ", str(e))
+        logger.error(f"error while processing request: {str(e)}")
         try:
             res = executor(
                 {

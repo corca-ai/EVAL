@@ -25,6 +25,7 @@ accelerate = "^0.17.1"
 transformers = {git = "https://github.com/huggingface/transformers.git", rev = "main"}
 sentencepiece = "^0.1.97"
 bitsandbytes = "^0.37.2"
+python-ptrace = "^0.9.8"
 
 [tool.poetry.group.tools]
 optional = true

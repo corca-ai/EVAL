@@ -23,13 +23,14 @@ class AgentBuilder:
 
     def build_llm(self):
         self.llm = HuggingFacePipeline.from_model_id(
-            model_id="chavinlo/alpaca-native",
+            model_id="decapoda-research/llama-13b-hf",
             task="text-generation",
             model_kwargs={
                 "load_in_8bit": True,
                 "device_map": "auto",
                 "max_length": 8192,
             },
+            device=2,
         )
 
     def build_parser(self):
@@ -75,8 +76,8 @@ class AgentBuilder:
                     self.toolsets
                 ),  # for names and descriptions
             ],
-            system_message=EVAL_PREFIX.format(bot_name=settings["BOT_NAME"]),
-            human_message=EVAL_SUFFIX.format(bot_name=settings["BOT_NAME"]),
+            prefix=EVAL_PREFIX.format(bot_name=settings["BOT_NAME"]),
+            suffix=EVAL_SUFFIX.format(bot_name=settings["BOT_NAME"]),
             output_parser=self.parser,
             max_iterations=30,
         )

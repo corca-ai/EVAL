@@ -61,7 +61,7 @@ class SyscallTracer:
                 break
 
             try:
-                self.wait_syscall_with_timeout(60)
+                self.wait_syscall_with_timeout(30)
             except ProcessExit as event:
                 if event.exitcode is not None:
                     exitcode = event.exitcode

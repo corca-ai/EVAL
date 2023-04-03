@@ -1,18 +1,18 @@
 from typing import Any, Dict, List, Optional, Union
 
+from ansi import ANSI, Color, Style
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain.schema import AgentAction, AgentFinish, LLMResult
-
-from ansi import ANSI, Color, Style
 from logger import logger
 
 
-class EVALCallbackHandler(BaseCallbackHandler):
-    def dim_multiline(self, message: str) -> str:
-        return message.split("\n")[0] + ANSI(
-            "\n... ".join(["", *message.split("\n")[1:]])
-        ).to(Color.black().bright())
+def dim_multiline(message: str) -> str:
+    return message.split("\n")[0] + ANSI(
+        "\n... ".join(["", *message.split("\n")[1:]])
+    ).to(Color.black().bright())
 
+
+class EVALCallbackHandler(BaseCallbackHandler):
     def on_llm_start(
         self, serialized: Dict[str, Any], prompts: List[str], **kwargs: Any
     ) -> None:
@@ -33,7 +33,7 @@ class EVALCallbackHandler(BaseCallbackHandler):
         self, serialized: Dict[str, Any], inputs: Dict[str, Any], **kwargs: Any
     ) -> None:
         logger.info(ANSI(f"Entering new chain.").to(Color.green(), Style.italic()))
-        logger.info(ANSI("Prompted Text").to(Color.yellow()) + f': {inputs["input"]}')
+        logger.info(ANSI("Prompted Text").to(Color.yellow()) + f': {inputs["input"]}\n')
 
     def on_chain_end(self, outputs: Dict[str, Any], **kwargs: Any) -> None:
         logger.info(ANSI(f"Finished chain.").to(Color.green(), Style.italic()))
@@ -52,14 +52,7 @@ class EVALCallbackHandler(BaseCallbackHandler):
         pass
 
     def on_agent_action(self, action: AgentAction, **kwargs: Any) -> Any:
-        logger.info(
-            ANSI("Action").to(Color.cyan()) + ": " + ANSI(action.tool).to(Style.bold())
-        )
-        logger.info(
-            ANSI("Input").to(Color.cyan())
-            + ": "
-            + self.dim_multiline(action.tool_input)
-        )
+        pass
 
     def on_tool_end(
         self,
@@ -69,7 +62,7 @@ class EVALCallbackHandler(BaseCallbackHandler):
         **kwargs: Any,
     ) -> None:
         logger.info(
-            ANSI("Observation").to(Color.magenta()) + ": " + self.dim_multiline(output)
+            ANSI("Observation").to(Color.magenta()) + ": " + dim_multiline(output)
         )
         logger.info(ANSI("Thinking...").to(Color.green(), Style.italic()))
 
@@ -93,5 +86,5 @@ class EVALCallbackHandler(BaseCallbackHandler):
         logger.info(
             ANSI("Final Answer").to(Color.yellow())
             + ": "
-            + self.dim_multiline(finish.return_values.get("output", ""))
+            + dim_multiline(finish.return_values.get("output", ""))
         )

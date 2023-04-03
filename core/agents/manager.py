@@ -4,11 +4,18 @@ from langchain.agents.tools import BaseTool
 from langchain.agents.agent import Agent, AgentExecutor
 from langchain.chains.conversation.memory import ConversationBufferMemory
 from langchain.memory.chat_memory import BaseChatMemory
+from langchain.callbacks.base import CallbackManager
+from langchain.callbacks import set_handler
 
 from core.tools.base import BaseToolSet
 from core.tools.factory import ToolsFactory
 
+from .callback import EVALCallbackHandler
 from .builder import AgentBuilder
+
+
+callback_manager = CallbackManager([EVALCallbackHandler()])
+set_handler(EVALCallbackHandler())
 
 
 class AgentManager:
@@ -28,16 +35,21 @@ class AgentManager:
 
     def create_executor(self, session: str) -> AgentExecutor:
         memory: BaseChatMemory = self.create_memory()
+        tools = [
+            *self.global_tools,
+            *ToolsFactory.create_per_session_tools(
+                self.toolsets,
+                get_session=lambda: (session, self.executors[session]),
+            ),
+        ]
+        for tool in tools:
+            tool.set_callback_manager(callback_manager)
+
         return AgentExecutor.from_agent_and_tools(
             agent=self.agent,
-            tools=[
-                *self.global_tools,
-                *ToolsFactory.create_per_session_tools(
-                    self.toolsets,
-                    get_session=lambda: (session, self.executors[session]),
-                ),
-            ],
+            tools=tools,
             memory=memory,
+            callback_manager=callback_manager,
             verbose=True,
         )
 

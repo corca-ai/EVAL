@@ -8,6 +8,11 @@ from ansi import ANSI, Color, Style
 
 
 class EVALCallbackHandler(BaseCallbackHandler):
+    def dim_multiline(self, message: str) -> str:
+        return message.split("\n")[0] + ANSI(
+            "\n... ".join(["", *message.split("\n")[1:]])
+        ).to(Color.black().bright())
+
     def on_llm_start(
         self, serialized: Dict[str, Any], prompts: List[str], **kwargs: Any
     ) -> None:
@@ -53,11 +58,7 @@ class EVALCallbackHandler(BaseCallbackHandler):
         logger.info(
             ANSI("Input").to(Color.cyan())
             + ": "
-            + action.tool_input.split("\n")[0]
-            + "\n"
-            + ANSI("\n".join(action.tool_input.split("\n")[1:])).to(
-                Color.black().bright()
-            )
+            + self.dim_multiline(action.tool_input)
         )
 
     def on_tool_end(
@@ -67,7 +68,9 @@ class EVALCallbackHandler(BaseCallbackHandler):
         llm_prefix: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
-        logger.info(ANSI("Observation").to(Color.magenta()) + f": {output}")
+        logger.info(
+            ANSI("Observation").to(Color.magenta()) + ": " + self.dim_multiline(output)
+        )
         logger.info(ANSI("Thinking...").to(Color.green(), Style.italic()))
 
     def on_tool_error(
@@ -90,5 +93,5 @@ class EVALCallbackHandler(BaseCallbackHandler):
         logger.info(
             ANSI("Final Answer").to(Color.yellow())
             + ": "
-            + finish.return_values.get("output", "")
+            + self.dim_multiline(finish.return_values.get("output", ""))
         )

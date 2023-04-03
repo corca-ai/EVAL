@@ -106,6 +106,7 @@ class ANSI:
 
 
 def dim_multiline(message: str) -> str:
-    return message.split("\n")[0] + ANSI(
-        "\n... ".join(["", *message.split("\n")[1:]])
-    ).to(Color.black().bright())
+    lines = message.split("\n")
+    if len(lines) <= 1:
+        return lines[0]
+    return lines[0] + ANSI("\n... ".join(lines[1:])).to(Color.black().bright())

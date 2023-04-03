@@ -1,37 +1,27 @@
 import re
 from typing import Dict, List, TypedDict
 
-import torch
 import uvicorn
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
-
 from core.agents.manager import AgentManager
 from core.handlers.base import BaseHandler, FileHandler, FileType
 from core.handlers.dataframe import CsvToDataframe
-from core.handlers.image import ImageCaptioning
 from core.prompts.error import ERROR_PROMPT
 from core.tools.base import BaseToolSet
-from core.tools.cpu import ExitConversation, RequestsGet, WineDB
+from core.tools.cpu import ExitConversation, RequestsGet
 from core.tools.editor import CodeEditor
-from core.tools.gpu import (
-    ImageEditing,
-    InstructPix2Pix,
-    Text2Image,
-    VisualQuestionAnswering,
-)
 from core.tools.terminal import Terminal
 from core.upload import StaticUploader
 from env import settings
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from logger import logger
+from pydantic import BaseModel
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory=StaticUploader.STATIC_DIR), name="static")
 uploader = StaticUploader.from_settings(settings)
 
-use_gpu = settings["USE_GPU"] and torch.cuda.is_available()
 
 toolsets: List[BaseToolSet] = [
     Terminal(),
@@ -39,24 +29,28 @@ toolsets: List[BaseToolSet] = [
     RequestsGet(),
     ExitConversation(),
 ]
+handlers: Dict[FileType, BaseHandler] = {FileType.DATAFRAME: CsvToDataframe()}
 
-if use_gpu:
-    toolsets.extend(
-        [
-            Text2Image("cuda"),
-            ImageEditing("cuda"),
-            InstructPix2Pix("cuda"),
-            VisualQuestionAnswering("cuda"),
-        ]
+if settings["USE_GPU"]:
+    import torch
+    from core.handlers.image import ImageCaptioning
+    from core.tools.gpu import (
+        ImageEditing,
+        InstructPix2Pix,
+        Text2Image,
+        VisualQuestionAnswering,
     )
 
-handlers: Dict[FileType, BaseHandler] = {}
-handlers[FileType.DATAFRAME] = CsvToDataframe()
-if use_gpu:
-    handlers[FileType.IMAGE] = ImageCaptioning("cuda")
-
-if settings["WINEDB_HOST"] and settings["WINEDB_PASSWORD"]:
-    toolsets.append(WineDB())
+    if torch.cuda.is_available():
+        toolsets.extend(
+            [
+                Text2Image("cuda"),
+                ImageEditing("cuda"),
+                InstructPix2Pix("cuda"),
+                VisualQuestionAnswering("cuda"),
+            ]
+        )
+        handlers[FileType.IMAGE] = ImageCaptioning("cuda")
 
 agent_manager = AgentManager.create(toolsets=toolsets)
 file_handler = FileHandler(handlers=handlers)

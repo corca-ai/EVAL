@@ -15,17 +15,22 @@ langchain = "^0.0.115"
 diffusers = "^0.14.0"
 pydantic = "^1.10.6"
 tenacity = "^8.2.2"
-llama-index = "^0.4.29"
+llama-index = "0.4.29"
 python-dotenv = "^1.0.0"
-torch = "^2.0.0"
 pillow = "^9.4.0"
 boto3 = "^1.26.94"
 uvicorn = "^0.21.1"
+python-ptrace = "^0.9.8"
+
+[tool.poetry.group.gpu]
+optional = true
+
+[tool.poetry.group.gpu.dependencies]
+torch = "^2.0.0"
 accelerate = "^0.17.1"
 transformers = {git = "https://github.com/huggingface/transformers.git", rev = "main"}
 sentencepiece = "^0.1.97"
 bitsandbytes = "^0.37.2"
-python-ptrace = "^0.9.8"
 
 [tool.poetry.group.tools]
 optional = true

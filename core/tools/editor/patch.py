@@ -73,7 +73,7 @@ class Position:
     @staticmethod
     def from_str(pos: str) -> "Position":
         line, col = pos.split(Position.separator)
-        return Position(int(line) - 1, int(col) - 1)
+        return Position(int(line), int(col))
 
 
 class PatchCommand:

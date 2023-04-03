@@ -18,7 +18,7 @@ Use this if you want the human to use a tool.
 Your response should be in the following schema:
 
 Action: the action to take, should be one of [{tool_names}]
-Plan: All remaining detailed plans after this action in bullet points.
+Plan: All remaining detailed plans after this action in check box. Each plan should be concise and clear to achieve the goal. Write it in the following schema: - [ ] plan
 Action Input: the input to the action
 
 **Option #2:**

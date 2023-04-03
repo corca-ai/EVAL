@@ -1,4 +1,7 @@
+from pathlib import Path
+
 from core.tools.base import BaseToolSet, tool
+from env import settings
 from logger import logger
 
 from .patch import CodePatcher
@@ -127,9 +130,9 @@ class CodeEditor(BaseToolSet):
         "Output will be success or error message.",
     )
     def delete(self, inputs: str) -> str:
-        filename = inputs
+        filepath: str = str(Path(settings["PLAYGROUND_DIR"]) / Path(inputs))
         try:
-            with open(filename, "w") as f:
+            with open(filepath, "w") as f:
                 f.write("")
             output = "success"
         except Exception as e:

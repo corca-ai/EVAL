@@ -9,6 +9,7 @@ services:
       context: .
     volumes:
       - ./static/:/app/static/
+      - ./playground/:/app/playground/
     ports:
       - "4500:4500"
       - "7000:7000"

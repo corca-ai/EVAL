@@ -1,9 +1,6 @@
 import torch
 from PIL import Image
-from transformers import (
-    BlipProcessor,
-    BlipForConditionalGeneration,
-)
+from transformers import BlipForConditionalGeneration, BlipProcessor
 
 from core.prompts.file import IMAGE_PROMPT
 

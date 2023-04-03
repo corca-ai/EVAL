@@ -1,16 +1,16 @@
-from typing import Tuple, Optional
 import signal
+from typing import Optional, Tuple
 
 from ptrace.debugger import (
-    PtraceDebugger,
-    PtraceProcess,
-    ProcessExit,
-    ProcessSignal,
     NewProcessEvent,
     ProcessExecution,
+    ProcessExit,
+    ProcessSignal,
+    PtraceDebugger,
+    PtraceProcess,
 )
-from ptrace.syscall import PtraceSyscall
 from ptrace.func_call import FunctionCallOptions
+from ptrace.syscall import PtraceSyscall
 from ptrace.tools import signal_to_exitcode
 
 
@@ -61,7 +61,7 @@ class SyscallTracer:
                 break
 
             try:
-                self.wait_syscall_with_timeout(5)
+                self.wait_syscall_with_timeout(60)
             except ProcessExit as event:
                 if event.exitcode is not None:
                     exitcode = event.exitcode

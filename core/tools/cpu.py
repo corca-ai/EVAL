@@ -1,14 +1,12 @@
-from env import settings
-
 import requests
-
-from llama_index.readers.database import DatabaseReader
-from llama_index import GPTSimpleVectorIndex
-
 from bs4 import BeautifulSoup
+from llama_index import GPTSimpleVectorIndex
+from llama_index.readers.database import DatabaseReader
 
-from .base import tool, BaseToolSet, ToolScope, SessionGetter
+from env import settings
 from logger import logger
+
+from .base import BaseToolSet, SessionGetter, ToolScope, tool
 
 
 class RequestsGet(BaseToolSet):

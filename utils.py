@@ -1,9 +1,9 @@
 import os
 import random
-import torch
 import uuid
-import numpy as np
 
+import numpy as np
+import torch
 
 os.makedirs("image", exist_ok=True)
 os.makedirs("audio", exist_ok=True)

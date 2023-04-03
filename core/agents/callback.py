@@ -3,8 +3,8 @@ from typing import Any, Dict, List, Optional, Union
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain.schema import AgentAction, AgentFinish, LLMResult
 
-from logger import logger
 from ansi import ANSI, Color, Style
+from logger import logger
 
 
 class EVALCallbackHandler(BaseCallbackHandler):

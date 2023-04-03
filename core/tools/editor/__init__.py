@@ -1,4 +1,4 @@
-from core.tools.base import tool, BaseToolSet
+from core.tools.base import BaseToolSet, tool
 from logger import logger
 
 from .patch import CodePatcher

@@ -1,12 +1,11 @@
 import subprocess
+from tempfile import TemporaryFile
 from typing import Dict, List
 
-from tempfile import TemporaryFile
-
+from core.tools.base import BaseToolSet, SessionGetter, ToolScope, tool
+from core.tools.terminal.syscall import SyscallTracer
 from env import settings
 from logger import logger
-from core.tools.base import tool, BaseToolSet, ToolScope, SessionGetter
-from core.tools.terminal.syscall import SyscallTracer
 
 
 class Terminal(BaseToolSet):
@@ -17,9 +16,8 @@ class Terminal(BaseToolSet):
         name="Terminal",
         description="Executes commands in a terminal."
         "If linux errno occurs, we have to solve the problem with the terminal. "
-        "It can't execute interactive operations or blocking operations. "
-        "Input should be valid commands, "
-        "and the output will be any output from running that command.",
+        "Input must be one valid command. "
+        "Output will be any output from running that command.",
         scope=ToolScope.SESSION,
     )
     def execute(self, commands: str, get_session: SessionGetter) -> str:
@@ -44,9 +42,6 @@ class Terminal(BaseToolSet):
                 output = fp.read().decode()
         except Exception as e:
             output = str(e)
-
-        if len(output) > 1000:
-            output = output[:1000] + "..."
 
         logger.debug(
             f"\nProcessed Terminal, Input Commands: {commands} "

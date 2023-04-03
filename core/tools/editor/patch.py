@@ -56,7 +56,11 @@ test.py|7,5|9,13|news_titles = []
 test.py|11,16|11,16|_titles
 """
 
+import os
+from pathlib import Path
 from typing import Tuple
+
+from env import settings
 
 
 class Position:
@@ -76,7 +80,7 @@ class PatchCommand:
     separator = "|"
 
     def __init__(self, filepath: str, start: Position, end: Position, content: str):
-        self.filepath: str = filepath
+        self.filepath: str = str(Path(settings["PLAYGROUND_DIR"]) / Path(filepath))
         self.start: Position = start
         self.end: Position = end
         self.content: str = content
@@ -92,6 +96,13 @@ class PatchCommand:
         return sum([len(line) for line in lines])
 
     def execute(self) -> Tuple[int, int]:
+        # make sure the directory exists
+        if not str(Path(self.filepath).resolve()).startswith(
+            str(Path(settings["PLAYGROUND_DIR"]).resolve())
+        ):
+            return "You can't write file outside of current directory."
+
+        os.makedirs(os.path.dirname(self.filepath), exist_ok=True)
         lines = self.read_lines()
         before = sum([len(line) for line in lines])
 

@@ -1,29 +1,26 @@
 import os
 import uuid
+
 import numpy as np
 import torch
-from PIL import Image
-
-from transformers import (
-    CLIPSegProcessor,
-    CLIPSegForImageSegmentation,
-)
-from transformers import (
-    BlipProcessor,
-    BlipForQuestionAnswering,
-)
-
 from diffusers import (
-    StableDiffusionPipeline,
+    EulerAncestralDiscreteScheduler,
     StableDiffusionInpaintPipeline,
     StableDiffusionInstructPix2PixPipeline,
+    StableDiffusionPipeline,
 )
-from diffusers import EulerAncestralDiscreteScheduler
+from PIL import Image
+from transformers import (
+    BlipForQuestionAnswering,
+    BlipProcessor,
+    CLIPSegForImageSegmentation,
+    CLIPSegProcessor,
+)
 
-from utils import get_new_image_name
 from logger import logger
+from utils import get_new_image_name
 
-from .base import tool, BaseToolSet
+from .base import BaseToolSet, tool
 
 
 class MaskFormer(BaseToolSet):

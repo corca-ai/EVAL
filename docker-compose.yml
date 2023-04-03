@@ -10,7 +10,7 @@ services:
     volumes:
       - ./static/:/app/static/
     ports:
-      - "3000:3000"
+      - "4500:4500"
       - "7000:7000"
       - "8000:8000" # eval port
     env_file:
@@ -26,7 +26,7 @@ services:
       - ../.cache/huggingface/:/root/.cache/huggingface/
       - ./static/:/app/static/
     ports:
-      - "3000:3000"
+      - "4500:4500"
       - "7000:7000"
       - "8000:8000" # eval port
     env_file:

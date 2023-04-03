@@ -1,18 +1,17 @@
 from typing import Dict
 
-from langchain.agents.tools import BaseTool
 from langchain.agents.agent import Agent, AgentExecutor
+from langchain.agents.tools import BaseTool
+from langchain.callbacks import set_handler
+from langchain.callbacks.base import CallbackManager
 from langchain.chains.conversation.memory import ConversationBufferMemory
 from langchain.memory.chat_memory import BaseChatMemory
-from langchain.callbacks.base import CallbackManager
-from langchain.callbacks import set_handler
 
 from core.tools.base import BaseToolSet
 from core.tools.factory import ToolsFactory
 
-from .callback import EVALCallbackHandler
 from .builder import AgentBuilder
-
+from .callback import EVALCallbackHandler
 
 callback_manager = CallbackManager([EVALCallbackHandler()])
 set_handler(EVALCallbackHandler())

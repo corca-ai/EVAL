@@ -3,7 +3,7 @@ read protocol:
 
 <filepath>|<start line>-<end line>
 """
-from typing import Optional, List, Tuple
+from typing import List, Optional, Tuple
 
 
 class Line:

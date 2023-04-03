@@ -1,8 +1,8 @@
-from typing import Callable, Tuple
 from enum import Enum
+from typing import Callable, Tuple
 
-from langchain.agents.tools import Tool, BaseTool
 from langchain.agents.agent import AgentExecutor
+from langchain.agents.tools import BaseTool, Tool
 
 
 class ToolScope(Enum):

@@ -32,6 +32,7 @@ from core.handlers.dataframe import CsvToDataframe
 from core.upload import StaticUploader
 
 from logger import logger
+from ansi import ANSI, Color
 
 app = FastAPI()
 
@@ -91,15 +92,11 @@ async def command(request: Request) -> Response:
     files = request.files
     session = request.key
 
-    logger.info("=============== Running =============")
-    logger.info(f"Query: {query}, Files: {files}")
     executor = agent_manager.get_or_create_executor(session)
-
-    logger.info(f"======> Previous memory:\n\t{executor.memory}")
 
     promptedQuery = "\n".join([file_handler.handle(file) for file in files])
     promptedQuery += query
-    logger.info(f"======> Prompted Text:\n\t{promptedQuery}")
+    logger.info(ANSI("Prompted Text").to(Color.yellow()) + f": {promptedQuery}")
 
     try:
         res = executor({"input": promptedQuery})

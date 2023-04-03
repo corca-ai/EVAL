@@ -32,7 +32,6 @@ from core.handlers.dataframe import CsvToDataframe
 from core.upload import StaticUploader
 
 from logger import logger
-from ansi import ANSI, Color
 
 app = FastAPI()
 
@@ -96,7 +95,6 @@ async def command(request: Request) -> Response:
 
     promptedQuery = "\n".join([file_handler.handle(file) for file in files])
     promptedQuery += query
-    logger.info(ANSI("Prompted Text").to(Color.yellow()) + f": {promptedQuery}")
 
     try:
         res = executor({"input": promptedQuery})

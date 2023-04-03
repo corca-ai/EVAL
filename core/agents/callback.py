@@ -27,12 +27,8 @@ class EVALCallbackHandler(BaseCallbackHandler):
     def on_chain_start(
         self, serialized: Dict[str, Any], inputs: Dict[str, Any], **kwargs: Any
     ) -> None:
-        class_name = serialized["name"]
-        logger.info(
-            ANSI(f"Entering new {class_name} chain...").to(
-                Color.green(), Style.italic()
-            )
-        )
+        logger.info(ANSI(f"Entering new chain.").to(Color.green(), Style.italic()))
+        logger.info(ANSI("Prompted Text").to(Color.yellow()) + f': {inputs["input"]}')
 
     def on_chain_end(self, outputs: Dict[str, Any], **kwargs: Any) -> None:
         logger.info(ANSI(f"Finished chain.").to(Color.green(), Style.italic()))

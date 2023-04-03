@@ -19,6 +19,7 @@ Your response should be in the following schema:
 
 Action: the action to take, should be one of [{tool_names}]
 Plan: All remaining detailed plans after this action in check box. Each plan should be concise and clear to achieve the goal. Write it in the following schema: - [ ] plan
+What I Did: What you just did to achieve the goal. If you have not done anything, write None.
 Action Input: the input to the action
 
 **Option #2:**
@@ -28,6 +29,7 @@ Your response should be in the following schema:
 
 Action: Final Answer
 Plan: None
+What I Did: None
 Action Input: string \\ You should put what you want to return to use here.
 """
 

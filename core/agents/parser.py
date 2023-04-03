@@ -14,16 +14,18 @@ class EvalOutputParser(BaseOutputParser):
         return EVAL_FORMAT_INSTRUCTIONS
 
     def parse(self, text: str) -> Dict[str, str]:
-        regex = r"Action: (.*?)[\n]Plan:(.*)Action Input: (.*)"
+        regex = r"Action: (.*?)[\n]Plan:(.*)[\n]What I Did:(.*)[\n]Action Input: (.*)"
         match = re.search(regex, text, re.DOTALL)
         if not match:
             raise Exception("parse error")
 
         action = match.group(1).strip()
         plan = match.group(2)
-        action_input = match.group(3)
+        what_i_did = match.group(3)
+        action_input = match.group(4)
 
         logger.info(ANSI("Plan").to(Color.blue()) + ": " + plan)
+        logger.info(ANSI("What I Did").to(Color.blue().bright()) + ": " + what_i_did)
         time.sleep(1)
         logger.info(
             ANSI("Action").to(Color.cyan()) + ": " + ANSI(action).to(Style.bold())

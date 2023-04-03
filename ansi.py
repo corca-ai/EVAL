@@ -48,10 +48,6 @@ class Color(Code):
         return Color(37)
 
     @staticmethod
-    def grey() -> "Color":
-        return Color(38)
-
-    @staticmethod
     def default() -> "Color":
         return Color(39)
 

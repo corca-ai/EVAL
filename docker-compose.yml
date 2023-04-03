@@ -5,14 +5,29 @@ services:
     container_name: eval
     image: eval
     build:
-      dockerfile: Dockerfile
+      dockerfile: build/Dockerfile.cpu
+      context: .
+    volumes:
+      - ./static/:/app/static/
+    ports:
+      - "3000:3000"
+      - "7000:7000"
+      - "8000:8000" # eval port
+    env_file:
+      - .env
+
+  eval.gpu:
+    container_name: eval.gpu
+    image: eval.gpu
+    build:
+      dockerfile: build/Dockerfile.gpu
       context: .
     volumes: # if you want to decrease your model download time, use this.
       - ../.cache/huggingface/:/root/.cache/huggingface/
       - ./static/:/app/static/
     ports:
-      - "7500:7500"
-      - "7501:7501"
+      - "3000:3000"
+      - "7000:7000"
       - "8000:8000" # eval port
     env_file:
       - .env
@@ -21,5 +36,5 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["3"] # You can choose which GPU to use
+              device_ids: ["1"] # You can choose which GPU to use
               capabilities: [gpu]

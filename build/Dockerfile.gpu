@@ -17,10 +17,11 @@ COPY poetry.lock .
 
 COPY api api
 RUN poetry env use 3.10
+RUN poetry config installer.max-workers 10
 RUN poetry install --with tools
 
 COPY . .
 
-ENV PORT 8000
+ENV PORT 8001
 
 ENTRYPOINT ["poetry", "run", "serve"]

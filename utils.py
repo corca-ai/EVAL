@@ -3,7 +3,6 @@ import random
 import uuid
 
 import numpy as np
-import torch
 
 os.makedirs("image", exist_ok=True)
 os.makedirs("audio", exist_ok=True)
@@ -15,8 +14,13 @@ os.makedirs("playground", exist_ok=True)
 def seed_everything(seed):
     random.seed(seed)
     np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
+    try:
+        import torch
+
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+    except:
+        pass
     return seed
 
 

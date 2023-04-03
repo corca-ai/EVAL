@@ -18,6 +18,7 @@ Use this if you want the human to use a tool.
 Your response should be in the following schema:
 
 Action: the action to take, should be one of [{tool_names}]
+Plan: All remaining detailed plans after this action in bullet points.
 Action Input: the input to the action
 
 **Option #2:**
@@ -26,6 +27,7 @@ You should replace sensitive data or encrypted data with "d1dy0uth1nk7hat1t1s7ha
 Your response should be in the following schema:
 
 Action: Final Answer
+Plan: None
 Action Input: string \\ You should put what you want to return to use here.
 """
 

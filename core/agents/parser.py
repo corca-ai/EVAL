@@ -2,8 +2,7 @@ import re
 import time
 from typing import Dict
 
-from ansi import ANSI, Color, Style
-from core.agents.callback import dim_multiline
+from ansi import ANSI, Color, Style, dim_multiline
 from core.prompts.input import EVAL_FORMAT_INSTRUCTIONS
 from langchain.output_parsers.base import BaseOutputParser
 from logger import logger

@@ -1,4 +1,6 @@
+import time
 import subprocess
+from datetime import datetime
 from tempfile import TemporaryFile
 from typing import Dict, List
 
@@ -6,6 +8,7 @@ from core.tools.base import BaseToolSet, SessionGetter, ToolScope, tool
 from core.tools.terminal.syscall import SyscallTracer
 from env import settings
 from logger import logger
+from ansi import ANSI, Color, dim_multiline
 
 
 class Terminal(BaseToolSet):
@@ -33,13 +36,26 @@ class Terminal(BaseToolSet):
                     stderr=fp,
                 )
 
-                tracer = SyscallTracer(process.pid)
-                tracer.attach()
-                exitcode, reason = tracer.wait_until_stop_or_exit()
-                logger.debug(f"Stopped terminal execution: {exitcode} {reason}")
+                output = ""
+                last_stdout = datetime.now()
+                while True:
+                    fp.seek(0)
+                    new_output = fp.read().decode()
+                    if new_output != output:
+                        logger.info(
+                            ANSI("Terminal Output").to(Color.magenta())
+                            + ": "
+                            + dim_multiline(new_output[len(output) :])
+                        )
+                        output = new_output
+                        last_stdout = datetime.now()
 
-                fp.seek(0)
-                output = fp.read().decode()
+                    if (datetime.now() - last_stdout).seconds > 10:
+                        process.kill()
+                        break
+
+                    time.sleep(0.1)
+
         except Exception as e:
             output = str(e)
 

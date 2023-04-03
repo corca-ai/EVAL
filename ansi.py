@@ -103,3 +103,9 @@ class ANSI:
     def to(self, *args: str):
         self.args = list(args)
         return self.wrap(self.text)
+
+
+def dim_multiline(message: str) -> str:
+    return message.split("\n")[0] + ANSI(
+        "\n... ".join(["", *message.split("\n")[1:]])
+    ).to(Color.black().bright())

@@ -1,15 +1,9 @@
 from typing import Any, Dict, List, Optional, Union
 
-from ansi import ANSI, Color, Style
+from ansi import ANSI, Color, Style, dim_multiline
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain.schema import AgentAction, AgentFinish, LLMResult
 from logger import logger
-
-
-def dim_multiline(message: str) -> str:
-    return message.split("\n")[0] + ANSI(
-        "\n... ".join(["", *message.split("\n")[1:]])
-    ).to(Color.black().bright())
 
 
 class EVALCallbackHandler(BaseCallbackHandler):

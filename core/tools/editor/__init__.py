@@ -48,23 +48,19 @@ class CodeEditor(BaseToolSet):
         )
         return output
 
-    # @tool(
-    #     name="CodeEditor.APPEND",
-    #     description="Append code to the existing file. "
-    #     "If the code is completed, use the Terminal tool to execute it, if not, append the code through the this tool. "
-    #     "Input should be filename and code to append. "
-    #     "Input code must be the code that should be appended, NOT whole code. "
-    #     "ex. test.py\nprint('hello world')\n "
-    #     "and the output will be last 3 line.",
-    # )
+    @tool(
+        name="CodeEditor.APPEND",
+        description="Append code to the existing file. "
+        "If the code is completed, use the Terminal tool to execute it, if not, append the code through the CodeEditor.APPEND tool. "
+        "Input should be filename and code to append. "
+        "Input code must be the code that should be appended, NOT whole code. "
+        "ex. test.py\nprint('hello world')\n "
+        "and the output will be code. ",
+    )
     def append(self, inputs: str) -> str:
         try:
             code = CodeWriter.append(inputs)
-            output = (
-                "Last 3 line was:\n"
-                + "\n".join(code.split("\n")[-3:])
-                # + "\nYou can use CodeEditor.APPEND tool to append the code if it is not completed."
-            )
+            output = "Successfully wrote:\n" + code
         except Exception as e:
             output = str(e)
 
@@ -78,18 +74,14 @@ class CodeEditor(BaseToolSet):
         name="CodeEditor.WRITE",
         description="Write code to create a new tool. "
         "If the code is completed, use the Terminal tool to execute it, if not, append the code through the CodeEditor.APPEND tool. "
-        "Input should be filename and code. This file must be in playground folder. "
         "ex. test.py\nprint('hello world')\n "
-        "and the output will be last 3 line.",
+        "Input should be filename and code. "
+        "and the output will be code. ",
     )
     def write(self, inputs: str) -> str:
         try:
             code = CodeWriter.write(inputs)
-            output = (
-                "Successfully wrote:\n"
-                + code
-                # + "\nYou can use CodeEditor.APPEND tool to append the code if it is not completed."
-            )
+            output = "Successfully wrote:\n" + code
         except Exception as e:
             output = str(e)
 
@@ -106,19 +98,13 @@ class CodeEditor(BaseToolSet):
         )
         + "Each patch has to be formatted like below.\n"
         "<filepath>|<start_line>,<start_col>|<end_line>,<end_col>|<new_code>"
-        "Here is an example. If the original code is:\n"
-        "print('hello world')\n"
-        "and you want to change it to:\n"
-        "print('hi corca')\n"
-        "then the patch should be:\n"
-        "test.py|1,8|1,19|hi corca\n"
         "Code between start and end will be replaced with new_code. "
         "The output will be written/deleted bytes or error message. ",
     )
     def patch(self, patches: str) -> str:
         try:
             w, d = CodePatcher.patch(patches)
-            output = f"successfully wrote {w}, deleted {d}"
+            output = f"Successfully wrote {w}, deleted {d}"
         except Exception as e:
             output = str(e)
 

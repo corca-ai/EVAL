@@ -16,6 +16,7 @@ from langchain.schema import (
     SystemMessage,
 )
 from langchain.utils import get_from_dict_or_env
+from logger import logger
 from pydantic import BaseModel, Extra, Field, root_validator
 from tenacity import (
     before_sleep_log,
@@ -24,8 +25,6 @@ from tenacity import (
     stop_after_attempt,
     wait_exponential,
 )
-
-from logger import logger
 
 
 def _create_retry_decorator(llm: ChatOpenAI) -> Callable[[Any], Any]:
@@ -186,7 +185,6 @@ class ChatOpenAI(BaseChatModel, BaseModel):
             "max_tokens": self.max_tokens,
             "stream": self.streaming,
             "n": self.n,
-            "temperature": 0.3,
             **self.model_kwargs,
         }
 

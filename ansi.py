@@ -109,4 +109,4 @@ def dim_multiline(message: str) -> str:
     lines = message.split("\n")
     if len(lines) <= 1:
         return lines[0]
-    return lines[0] + ANSI("\n... ".join(lines[1:])).to(Color.black().bright())
+    return lines[0] + ANSI("\n... ".join([""] + lines[1:])).to(Color.black().bright())

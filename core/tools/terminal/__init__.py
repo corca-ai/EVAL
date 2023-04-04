@@ -1,15 +1,15 @@
 import os
-import time
 import subprocess
+import time
 from datetime import datetime
 from typing import Dict, List
 
+from ansi import ANSI, Color, Style
 from core.tools.base import BaseToolSet, SessionGetter, ToolScope, tool
-from core.tools.terminal.syscall import SyscallTracer
 from core.tools.terminal.stdout import StdoutTracer
+from core.tools.terminal.syscall import SyscallTracer
 from env import settings
 from logger import logger
-from ansi import ANSI, Color, Style
 
 
 class Terminal(BaseToolSet):

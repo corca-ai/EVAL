@@ -2,6 +2,7 @@ import re
 from typing import Dict, List, TypedDict
 
 import uvicorn
+from ansi import ANSI, Color, Style, dim_multiline
 from core.agents.manager import AgentManager
 from core.handlers.base import BaseHandler, FileHandler, FileType
 from core.handlers.dataframe import CsvToDataframe
@@ -86,23 +87,18 @@ async def command(request: Request) -> Response:
     try:
         res = executor({"input": promptedQuery})
     except Exception as e:
-        logger.error(f"error while processing request: {str(e)}")
-        try:
-            res = executor(
-                {
-                    "input": ERROR_PROMPT.format(promptedQuery=promptedQuery, e=str(e)),
-                }
-            )
-        except Exception as e:
-            return {"response": str(e), "files": []}
+        logger.error(
+            ANSI("error while processing request").to(Color.red)
+            + ": "
+            + dim_multiline(str(e))
+        )
+        return {"response": str(e), "files": []}
 
-    images = re.findall("(image/\S*png)", res["output"])
-    dataframes = re.findall("(dataframe/\S*csv)", res["output"])
+    files = re.findall("(image/\S*png)|(dataframe/\S*csv)", res["output"])
 
     return {
         "response": res["output"],
-        "files": [uploader.upload(image) for image in images]
-        + [uploader.upload(dataframe) for dataframe in dataframes],
+        "files": [uploader.upload(file) for file in files],
     }
 
 

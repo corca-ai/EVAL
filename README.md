@@ -2,6 +2,9 @@
 
 > **EVAL(Elastic Versatile Agent with Langchain) will execute all your requests. Like the eval method!**
 
+
+![image](assets/simple_todo.gif)
+
 You don't have to think about how. If you tell them the results you want, they'll search, code, run, and test the Internet themselves, and they'll return the final results.
 
 ### EVAL's FEATURE
@@ -13,6 +16,7 @@ You don't have to think about how. If you tell them the results you want, they'l
 ### BUILT-IN TOOLS
 
 1. Terminal
+   - SyscallTracer
 2. Code Editor
    - READ: Read and understand file.
    - WRITE: Write code to create a new tool.
@@ -23,8 +27,7 @@ You don't have to think about how. If you tell them the results you want, they'l
    - Custom DB Search (Currently using Corca's Wine Data in https://www.workershop.kr/en)
      - Use GPT index to quickly find the information you need in a document and use that information to answer
    - Requests.get (Get information from anywhere you want)
-4. Python REPL
-5. Image Understanding, Generation, Editing
+4. Image Understanding, Generation, Editing
    - Image Understanding
      - Image Understanding: blip-image-captioning
      - Visual Question&Answering: blip-vqa

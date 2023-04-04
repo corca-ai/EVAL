@@ -2,8 +2,7 @@
 
 > **EVAL(Elastic Versatile Agent with Langchain) will execute all your requests. Like the eval method!**
 
-
-![image](assets/simple_todo.gif)
+https://user-images.githubusercontent.com/19206046/229892113-481437b7-a332-4e0c-bfb3-d2c97c9035be.mp4
 
 You don't have to think about how. If you tell them the results you want, they'll search, code, run, and test the Internet themselves, and they'll return the final results.
 

@@ -50,12 +50,11 @@ class CodeEditor(BaseToolSet):
 
     @tool(
         name="CodeEditor.APPEND",
-        description="Append code to the existing file. "
-        "If the code is completed, use the Terminal tool to execute it, if not, append the code through the CodeEditor.APPEND tool. "
-        "Input should be filename and code to append. "
-        "Input code must be the code that should be appended, NOT whole code. "
+        description="Append text to the existing file. "
+        "Input should be filename and text to append. "
+        "Input text must be the text that should be appended, NOT whole text. "
         "ex. test.py\nprint('hello world')\n "
-        "and the output will be code. ",
+        "and the output will be your input text. ",
     )
     def append(self, inputs: str) -> str:
         try:
@@ -72,11 +71,10 @@ class CodeEditor(BaseToolSet):
 
     @tool(
         name="CodeEditor.WRITE",
-        description="Write code to create a new tool. "
-        "If the code is completed, use the Terminal tool to execute it, if not, append the code through the CodeEditor.APPEND tool. "
+        description="Write text to create a new tool. "
+        "Input should be filename and text. "
         "ex. test.py\nprint('hello world')\n "
-        "Input should be filename and code. "
-        "and the output will be code. ",
+        "and the output will be your input text. ",
     )
     def write(self, inputs: str) -> str:
         try:
@@ -116,7 +114,7 @@ class CodeEditor(BaseToolSet):
 
     @tool(
         name="CodeEditor.DELETE",
-        description="Delete code in file for a new start. "
+        description="Delete text in file for a new start. "
         "Input should be filename."
         "ex. test.py "
         "Output will be success or error message.",

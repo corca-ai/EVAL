@@ -2,9 +2,10 @@ import re
 import time
 from typing import Dict
 
+from langchain.output_parsers.base import BaseOutputParser
+
 from ansi import ANSI, Color, Style, dim_multiline
 from core.prompts.input import EVAL_FORMAT_INSTRUCTIONS
-from langchain.output_parsers.base import BaseOutputParser
 from logger import logger
 
 
@@ -13,7 +14,7 @@ class EvalOutputParser(BaseOutputParser):
         return EVAL_FORMAT_INSTRUCTIONS
 
     def parse(self, text: str) -> Dict[str, str]:
-        regex = r"Plan:(.*)[\n]What I Did: (.*)[\n]What Should I Do: (.*)[\n]Action: (.*?)[\n]Action Input: (.*)"
+        regex = r"Plan:(.*)[\n]What I Did: (.*)[\n]What Should I Do: (.*)[\n]Action: (.*?)[\n]Action Input:[ |\n](.*)"
         match = re.search(regex, text, re.DOTALL)
         if not match:
             raise Exception("parse error")

@@ -1,8 +1,12 @@
+import os
 import subprocess
-from tempfile import TemporaryFile
+import time
+from datetime import datetime
 from typing import Dict, List
 
+from ansi import ANSI, Color, Style
 from core.tools.base import BaseToolSet, SessionGetter, ToolScope, tool
+from core.tools.terminal.stdout import StdoutTracer
 from core.tools.terminal.syscall import SyscallTracer
 from env import settings
 from logger import logger
@@ -24,22 +28,23 @@ class Terminal(BaseToolSet):
         session, _ = get_session()
 
         try:
-            with TemporaryFile() as fp:
-                process = subprocess.Popen(
-                    commands,
-                    shell=True,
-                    cwd=settings["PLAYGROUND_DIR"],
-                    stdout=fp,
-                    stderr=fp,
-                )
+            process = subprocess.Popen(
+                commands,
+                shell=True,
+                cwd=settings["PLAYGROUND_DIR"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            logger.info(ANSI("Realtime Terminal Output").to(Color.magenta()) + ": ")
 
-                tracer = SyscallTracer(process.pid)
-                tracer.attach()
-                exitcode, reason = tracer.wait_until_stop_or_exit()
-                logger.debug(f"Stopped terminal execution: {exitcode} {reason}")
-
-                fp.seek(0)
-                output = fp.read().decode()
+            output = ""
+            tracer = StdoutTracer(
+                process,
+                on_output=lambda p, o: logger.info(
+                    ANSI(p).to(Style.dim()) + " " + o.strip("\n")
+                ),
+            )
+            exitcode, output = tracer.wait_until_stop_or_exit()
         except Exception as e:
             output = str(e)
 

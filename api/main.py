@@ -2,6 +2,11 @@ import re
 from typing import Dict, List, TypedDict
 
 import uvicorn
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
+
+from ansi import ANSI, Color, Style, dim_multiline
 from core.agents.manager import AgentManager
 from core.handlers.base import BaseHandler, FileHandler, FileType
 from core.handlers.dataframe import CsvToDataframe
@@ -12,10 +17,7 @@ from core.tools.editor import CodeEditor
 from core.tools.terminal import Terminal
 from core.upload import StaticUploader
 from env import settings
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 from logger import logger
-from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -33,6 +35,7 @@ handlers: Dict[FileType, BaseHandler] = {FileType.DATAFRAME: CsvToDataframe()}
 
 if settings["USE_GPU"]:
     import torch
+
     from core.handlers.image import ImageCaptioning
     from core.tools.gpu import (
         ImageEditing,
@@ -86,23 +89,13 @@ async def command(request: Request) -> Response:
     try:
         res = executor({"input": promptedQuery})
     except Exception as e:
-        logger.error(f"error while processing request: {str(e)}")
-        try:
-            res = executor(
-                {
-                    "input": ERROR_PROMPT.format(promptedQuery=promptedQuery, e=str(e)),
-                }
-            )
-        except Exception as e:
-            return {"response": str(e), "files": []}
+        return {"response": str(e), "files": []}
 
-    images = re.findall("(image/\S*png)", res["output"])
-    dataframes = re.findall("(dataframe/\S*csv)", res["output"])
+    files = re.findall("(image/\S*png)|(dataframe/\S*csv)", res["output"])
 
     return {
         "response": res["output"],
-        "files": [uploader.upload(image) for image in images]
-        + [uploader.upload(dataframe) for dataframe in dataframes],
+        "files": [uploader.upload(file) for file in files],
     }
 
 

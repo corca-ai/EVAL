@@ -1,15 +1,10 @@
 from typing import Any, Dict, List, Optional, Union
 
-from ansi import ANSI, Color, Style
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain.schema import AgentAction, AgentFinish, LLMResult
+
+from ansi import ANSI, Color, Style, dim_multiline
 from logger import logger
-
-
-def dim_multiline(message: str) -> str:
-    return message.split("\n")[0] + ANSI(
-        "\n... ".join(["", *message.split("\n")[1:]])
-    ).to(Color.black().bright())
 
 
 class EVALCallbackHandler(BaseCallbackHandler):
@@ -41,7 +36,9 @@ class EVALCallbackHandler(BaseCallbackHandler):
     def on_chain_error(
         self, error: Union[Exception, KeyboardInterrupt], **kwargs: Any
     ) -> None:
-        logger.error(ANSI(f"Chain Error").to(Color.red()) + f": {error}")
+        logger.error(
+            ANSI(f"Chain Error").to(Color.red()) + ": " + dim_multiline(str(error))
+        )
 
     def on_tool_start(
         self,

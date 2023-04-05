@@ -2,10 +2,11 @@ import re
 import time
 from typing import Dict
 
+from langchain.output_parsers.base import BaseOutputParser
+
 from ansi import ANSI, Color, Style
 from core.agents.callback import dim_multiline
 from core.prompts.input import EVAL_FORMAT_INSTRUCTIONS
-from langchain.output_parsers.base import BaseOutputParser
 from logger import logger
 
 
@@ -24,8 +25,8 @@ class EvalOutputParser(BaseOutputParser):
         what_i_did = match.group(3)
         action_input = match.group(4)
 
-        logger.info(ANSI("Plan").to(Color.blue()) + ": " + plan)
-        logger.info(ANSI("What I Did").to(Color.blue().bright()) + ": " + what_i_did)
+        logger.info(ANSI("Plan").to(Color.blue().bright()) + ": " + plan)
+        logger.info(ANSI("What I Did").to(Color.blue()) + ": " + what_i_did)
         time.sleep(1)
         logger.info(
             ANSI("Action").to(Color.cyan()) + ": " + ANSI(action).to(Style.bold())

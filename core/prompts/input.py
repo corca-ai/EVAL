@@ -28,8 +28,8 @@ You should replace sensitive data or encrypted data with "d1dy0uth1nk7hat1t1s7ha
 Your response should be in the following schema:
 
 Action: Final Answer
-Plan: None
-What I Did: None
+Plan: ...
+What I Did: ...
 Action Input: string \\ You should put what you want to return to use here.
 """
 

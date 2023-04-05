@@ -106,6 +106,12 @@ class CodeEditor(BaseToolSet):
         )
         + "Each patch has to be formatted like below.\n"
         "<filepath>|<start_line>,<start_col>|<end_line>,<end_col>|<new_code>"
+        "Here is an example. If the original code is:\n"
+        "print('hello world')\n"
+        "and you want to change it to:\n"
+        "print('hi corca')\n"
+        "then the patch should be:\n"
+        "test.py|1,8|1,19|hi corca\n"
         "Code between start and end will be replaced with new_code. "
         "The output will be written/deleted bytes or error message. ",
     )

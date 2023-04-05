@@ -1,10 +1,16 @@
 # EVAL
 
 > **EVAL(Elastic Versatile Agent with Langchain) will execute all your requests. Like the eval method!**
+>
+> You don't have to think about how. If you tell them the results you want, they'll search, code, run, and test the Internet themselves, and they'll return the final results.
 
 https://user-images.githubusercontent.com/19206046/229892113-481437b7-a332-4e0c-bfb3-d2c97c9035be.mp4
 
-You don't have to think about how. If you tell them the results you want, they'll search, code, run, and test the Internet themselves, and they'll return the final results.
+EVAL Making a full-fledged web application with multiple files
+
+https://user-images.githubusercontent.com/51526347/230061897-b3479405-8ebd-45ab-a432-6506730242b9.mov
+
+EVAL Making a UI for itself
 
 ### EVAL's FEATURE
 

@@ -8,9 +8,12 @@ You don't have to think about how. If you tell them the results you want, they'l
 
 ### EVAL's FEATURE
 
-1. It can **understand** and **generate** data formats for text, image, dataframe, audio (TODO), video (TODO).
-2. It can **create tools** that it can use by writing and modifying code.
-3. It can **evolve** itself by executing and testing its code.
+1. **Multimodal Conversation**
+   - It **understands** and **generates** data formats for text, image, dataframe, audio (TODO), video (TODO).
+2. **Services**
+   - It can serve **services (blocking processes)** such as web apps.
+3. **Evolving**
+   - It can **create it's own tools** by writing, modifying, executing and testing code.
 
 ### BUILT-IN TOOLS
 

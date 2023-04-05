@@ -34,14 +34,6 @@ class SyscallTracer(BaseTracer):
         self.timeout: int = timeout
         self.process: PtraceProcess = None
 
-    def is_waiting(self, syscall: PtraceSyscall) -> bool:
-        if syscall.name.startswith("wait"):
-            return True
-        return False
-
-    def attach(self):
-        self.process = self.debugger.addProcess(self.pid, False)
-
     def detach(self):
         self.process.detach()
         self.debugger.quit()
@@ -62,6 +54,7 @@ class SyscallTracer(BaseTracer):
         self.reset_timer()
 
     def wait_until_stop_or_exit(self) -> Tuple[Optional[int], str]:
+        self.process = self.debugger.addProcess(self.pid, False)
         self.process.syscall()
         exitcode = None
         reason = ""

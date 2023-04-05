@@ -127,7 +127,7 @@ class PatchCommand:
     @staticmethod
     def from_str(command: str) -> "PatchCommand":
         match = re.search(
-            r"(.*)\|([0-9])*,([0-9])*\|([0-9]*),([0-9]*)(\||\n)(.*)",
+            r"(.*)\|([0-9]*),([0-9]*)\|([0-9]*),([0-9]*)(\||\n)(.*)",
             command,
             re.DOTALL,
         )

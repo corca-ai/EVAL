@@ -63,7 +63,7 @@ class CodeEditor(BaseToolSet):
             output = (
                 "Last 3 line was:\n"
                 + "\n".join(code.split("\n")[-3:])
-                + "\nYou can use CodeEditor.APPEND tool to append the code if it is not completed."
+                + "\nYou can use CodeEditor.APPEND tool to append the code if this file is not completed."
             )
         except Exception as e:
             output = str(e)
@@ -88,7 +88,7 @@ class CodeEditor(BaseToolSet):
             output = (
                 "Last 3 line was:\n"
                 + "\n".join(code.split("\n")[-3:])
-                + "\nYou can use CodeEditor.APPEND tool to append the code if it is not completed."
+                + "\nYou can use CodeEditor.APPEND tool to append the code if this file is not completed."
             )
         except Exception as e:
             output = str(e)

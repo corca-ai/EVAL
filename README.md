@@ -54,10 +54,11 @@ We also don't know what tools EVAL will create. Every day, It will create the ri
 
 ## Usage
 
-1. environments settings
-2. `docker-compose up -d`
+1. Environment variables
+2. Run with docker-compose
+3. Send request to EVAL
 
-### Environment
+### 1. Environment Variables
 
 You need to write some environment variables in the `.env` file. Refer [.env.example](.env.example) if you don't know how to format it.
 
@@ -86,8 +87,42 @@ Some tools requires environment variables. Set envs depend on which tools you wa
   - `BING_SEARCH_URL`
   - `BING_SUBSCRIPTION_KEY`
 
+### 2. Run with docker-compose
+
+- There are 2 services in docker-compose.yml
+  - `eval` - without GPU, much lighter
+    ```bash
+    docker-compose up --build eval
+    ```
+  - `eval.gpu` - with GPU, for multi-modal conversation
+    ```bash
+    docker-compose up --build eval.gpu
+    ```
+- The one with GPU is much heavier and unstable for now because of the massive dependencies. We recommend you to use the one without GPU if you don't need multi-modal conversation.
+
+### 3. Send request to EVAL
+
+- `POST /command`
+
+  - `key` - session id
+  - `files` - urls of file inputs
+  - `query` - prompt
+
+- You can send request to EVAL with `curl` or `httpie`.
+
+  ```bash
+  curl -X POST -H "Content-Type: application/json" -d '{"key": "sessionid", "files": ["https://example.com/image.png"], "query": "Hi there!"}' http://localhost:8000/command
+  ```
+
+  ```bash
+  http POST http://localhost:8000/command key=sessionid files:='["https://example.com/image.png"]' query="Hi there!"
+  ```
+
+- We are planning to make a GUI for EVAL so you can use it without terminal.
+
 ## TODO
 
+- [ ] GUI
 - [ ] memory saving
 - [ ] session manage
 - [ ] convert to alpaca

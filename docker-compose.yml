@@ -26,6 +26,7 @@ services:
     volumes: # if you want to decrease your model download time, use this.
       - ../.cache/huggingface/:/root/.cache/huggingface/
       - ./static/:/app/static/
+      - ./playground/:/app/playground/
     ports:
       - "4500:4500"
       - "7000:7000"

@@ -57,7 +57,6 @@ test.py|11,16|11,16|_titles
 """
 
 import os
-import re
 from pathlib import Path
 from typing import Tuple
 
@@ -71,13 +70,10 @@ class Position:
         self.line: int = line
         self.col: int = col
 
-    def __str__(self):
-        return f"(Ln {self.line}, Col {self.col})"
-
     @staticmethod
     def from_str(pos: str) -> "Position":
         line, col = pos.split(Position.separator)
-        return Position(int(line) - 1, int(col) - 1)
+        return Position(int(line), int(col))
 
 
 class PatchCommand:
@@ -126,22 +122,10 @@ class PatchCommand:
 
     @staticmethod
     def from_str(command: str) -> "PatchCommand":
-        match = re.search(
-            r"(.*)\|([0-9])*,([0-9])*\|([0-9]*),([0-9]*)(\||\n)(.*)",
-            command,
-            re.DOTALL,
-        )
-        filepath = match.group(1)
-        start_line = match.group(2)
-        start_col = match.group(3)
-        end_line = match.group(4)
-        end_col = match.group(5)
-        content = match.group(7)
+        filepath, start, end = command.split(PatchCommand.separator)[:3]
+        content = command[len(filepath + start + end) + 3 :]
         return PatchCommand(
-            filepath,
-            Position.from_str(f"{start_line},{start_col}"),
-            Position.from_str(f"{end_line},{end_col}"),
-            content,
+            filepath, Position.from_str(start), Position.from_str(end), content
         )
 
 

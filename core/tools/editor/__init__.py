@@ -80,7 +80,7 @@ class CodeEditor(BaseToolSet):
         "If the code is completed, use the Terminal tool to execute it, if not, append the code through the CodeEditor.APPEND tool. "
         "Input should be formatted like below.\n"
         "<filename>\n<code>\n"
-        "Here is an example. If you want to write a code to print 'hello world' in test.py, the input should be like:\n"
+        "Here is an example:\n"
         "test.py\nmessage = 'hello world'\nprint(message)\n"
         "\n"
         "The output will be last 3 lines you wrote.",

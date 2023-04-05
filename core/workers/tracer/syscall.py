@@ -1,4 +1,5 @@
 import signal
+import subprocess
 from typing import Optional, Tuple
 
 from ptrace.debugger import (
@@ -12,6 +13,7 @@ from ptrace.debugger import (
 from ptrace.func_call import FunctionCallOptions
 from ptrace.syscall import PtraceSyscall
 from ptrace.tools import signal_to_exitcode
+from .base import BaseTracer, OnOutputHandler
 
 
 class SyscallTimeoutException(Exception):
@@ -19,10 +21,17 @@ class SyscallTimeoutException(Exception):
         super().__init__(f"deadline exceeded while waiting syscall for {pid}", *args)
 
 
-class SyscallTracer:
-    def __init__(self, pid: int):
+class SyscallTracer(BaseTracer):
+    def __init__(
+        self,
+        process: subprocess.Popen,
+        timeout: int = 30,
+        on_output: OnOutputHandler = lambda: None,
+    ):
+        super().__init__(process, on_output)
         self.debugger: PtraceDebugger = PtraceDebugger()
-        self.pid: int = pid
+        self.pid: int = process.pid
+        self.timeout: int = timeout
         self.process: PtraceProcess = None
 
     def is_waiting(self, syscall: PtraceSyscall) -> bool:
@@ -61,7 +70,7 @@ class SyscallTracer:
                 break
 
             try:
-                self.wait_syscall_with_timeout(30)
+                self.wait_syscall_with_timeout(self.timeout)
             except ProcessExit as event:
                 if event.exitcode is not None:
                     exitcode = event.exitcode

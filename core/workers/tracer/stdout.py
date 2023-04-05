@@ -2,48 +2,30 @@ import os
 import time
 import subprocess
 from datetime import datetime
-from typing import Callable, Literal, Optional, Union, Tuple
+from typing import Literal, Optional, Union, Tuple
+from .base import BaseTracer, OnOutputHandler
 
 PipeType = Union[Literal["stdout"], Literal["stderr"]]
 
 
-class StdoutTracer:
+class StdoutTracer(BaseTracer):
     def __init__(
         self,
         process: subprocess.Popen,
         timeout: int = 30,
+        on_output: OnOutputHandler = lambda: None,
         interval: int = 0.1,
-        on_output: Callable[[PipeType, str], None] = lambda: None,
     ):
+        super().__init__(process, on_output)
         self.process: subprocess.Popen = process
         self.timeout: int = timeout
         self.interval: int = interval
         self.last_output: datetime = None
-        self.on_output: Callable[[PipeType, str], None] = on_output
-
-    def nonblock(self):
-        os.set_blocking(self.process.stdout.fileno(), False)
-        os.set_blocking(self.process.stderr.fileno(), False)
-
-    def get_output(self, pipe: PipeType) -> str:
-        output = None
-        if pipe == "stdout":
-            output = self.process.stdout.read()
-        elif pipe == "stderr":
-            output = self.process.stderr.read()
-
-        if output:
-            decoded = output.decode()
-            self.on_output(pipe, decoded)
-            self.last_output = datetime.now()
-            return decoded
-        return ""
 
     def last_output_passed(self, seconds: int) -> bool:
         return (datetime.now() - self.last_output).seconds > seconds
 
     def wait_until_stop_or_exit(self) -> Tuple[Optional[int], str]:
-        self.nonblock()
         self.last_output = datetime.now()
         output = ""
         exitcode = None
@@ -61,7 +43,6 @@ class StdoutTracer:
                 break
 
             if self.last_output_passed(self.timeout):
-                self.process.kill()
                 break
 
             time.sleep(self.interval)

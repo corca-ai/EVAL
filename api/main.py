@@ -6,18 +6,15 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from ansi import ANSI, Color, Style, dim_multiline
 from core.agents.manager import AgentManager
 from core.handlers.base import BaseHandler, FileHandler, FileType
 from core.handlers.dataframe import CsvToDataframe
-from core.prompts.error import ERROR_PROMPT
 from core.tools.base import BaseToolSet
 from core.tools.cpu import ExitConversation, RequestsGet
 from core.tools.editor import CodeEditor
 from core.tools.terminal import Terminal
 from core.upload import StaticUploader
 from env import settings
-from logger import logger
 
 app = FastAPI()
 

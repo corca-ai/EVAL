@@ -4,12 +4,6 @@ import uuid
 
 import numpy as np
 
-os.makedirs("image", exist_ok=True)
-os.makedirs("audio", exist_ok=True)
-os.makedirs("video", exist_ok=True)
-os.makedirs("dataframe", exist_ok=True)
-os.makedirs("playground", exist_ok=True)
-
 
 def seed_everything(seed):
     random.seed(seed)
@@ -22,16 +16,6 @@ def seed_everything(seed):
     except:
         pass
     return seed
-
-
-def prompts(name, description):
-    def decorator(func):
-        func.name = name
-        func.description = description
-        return func
-
-    return decorator
-
 
 def cut_dialogue_history(history_memory, keep_last_n_words=500):
     tokens = history_memory.split()

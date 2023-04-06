@@ -1,4 +1,9 @@
+const setAnswer = (answer) => {
+  document.getElementById("answer").textContent = answer;
+};
+
 const submit = async () => {
+  setAnswer("Loading...");
   const files = [];
   const rawfiles = document.getElementById("files").files;
 
@@ -31,7 +36,7 @@ const submit = async () => {
   });
 
   const { answer } = await response.json();
-  document.getElementById("answer").textContent = answer;
+  setAnswer(answer);
 };
 
 const setRandomSessionId = () => {

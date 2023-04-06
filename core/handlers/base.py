@@ -1,5 +1,7 @@
 import os
 import uuid
+import shutil
+from pathlib import Path
 from enum import Enum
 from typing import Dict
 import requests
@@ -74,6 +76,10 @@ class FileHandler:
         try:
             if url.startswith(settings["SERVER"]):
                 local_filename = url[len(settings["SERVER"]) + 1 :]
+                shutil.copy(
+                    local_filename,
+                    Path(settings["PLAYGROUND_DIR"]) / Path(local_filename),
+                )
             else:
                 local_filename = self.download(url)
             return self.handlers[FileType.from_url(url)].handle(local_filename)

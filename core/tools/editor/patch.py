@@ -84,7 +84,7 @@ class PatchCommand:
     separator = "|"
 
     def __init__(self, filepath: str, start: Position, end: Position, content: str):
-        self.filepath: str = str(Path(settings["PLAYGROUND_DIR"]) / Path(filepath))
+        self.filepath: str = filepath
         self.start: Position = start
         self.end: Position = end
         self.content: str = content
@@ -100,12 +100,6 @@ class PatchCommand:
         return sum([len(line) for line in lines])
 
     def execute(self) -> Tuple[int, int]:
-        # make sure the directory exists
-        if not str(Path(self.filepath).resolve()).startswith(
-            str(Path(settings["PLAYGROUND_DIR"]).resolve())
-        ):
-            return "You can't write file outside of current directory."
-
         os.makedirs(os.path.dirname(self.filepath), exist_ok=True)
         lines = self.read_lines()
         before = sum([len(line) for line in lines])

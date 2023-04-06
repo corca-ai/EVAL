@@ -1,3 +1,4 @@
+import os
 import re
 from typing import Dict, List, TypedDict
 
@@ -23,7 +24,7 @@ app = FastAPI()
 
 app.mount("/static", StaticFiles(directory=StaticUploader.STATIC_DIR), name="static")
 uploader = StaticUploader.from_settings(settings)
-
+os.chdir(settings["PLAYGROUND_DIR"])
 
 toolsets: List[BaseToolSet] = [
     Terminal(),
@@ -91,7 +92,7 @@ async def command(request: Request) -> Response:
     except Exception as e:
         return {"response": str(e), "files": []}
 
-    files = re.findall("(image/\S*png)|(dataframe/\S*csv)", res["output"])
+    files = re.findall("image/\S*png|dataframe/\S*csv", res["output"])
 
     return {
         "response": res["output"],
@@ -100,4 +101,4 @@ async def command(request: Request) -> Response:
 
 
 def serve():
-    uvicorn.run("api.main:app", host="0.0.0.0", port=settings["PORT"])
+    uvicorn.run("api.main:app", host="0.0.0.0", port=settings["EVAL_PORT"])

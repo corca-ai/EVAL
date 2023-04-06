@@ -104,16 +104,11 @@ class ReadCommand:
     separator = "|"
 
     def __init__(self, filepath: str, start: int, end: int):
-        self.filepath: str = str(Path(settings["PLAYGROUND_DIR"]) / Path(filepath))
+        self.filepath: str = filepath
         self.start: int = start
         self.end: int = end
 
     def execute(self) -> str:
-        if not str(Path(self.filepath).resolve()).startswith(
-            str(Path(settings["PLAYGROUND_DIR"]).resolve())
-        ):
-            return "You can't write file outside of current directory."
-
         with open(self.filepath, "r") as f:
             code = f.readlines()
 
@@ -134,16 +129,11 @@ class SummaryCommand:
     separator = "|"
 
     def __init__(self, filepath: str, depth: int, parent_content: Optional[str] = None):
-        self.filepath: str = str(Path(settings["PLAYGROUND_DIR"]) / Path(filepath))
+        self.filepath: str = filepath
         self.depth: int = depth
         self.parent_content: Optional[str] = parent_content
 
     def execute(self) -> str:
-        if not str(Path(self.filepath).resolve()).startswith(
-            str(Path(settings["PLAYGROUND_DIR"]).resolve())
-        ):
-            return "You can't write file outside of current directory."
-
         with open(self.filepath, "r") as f:
             code = f.readlines()
 

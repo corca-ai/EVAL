@@ -1,28 +1,31 @@
 import re
+from tempfile import NamedTemporaryFile
 from typing import Dict, List, TypedDict
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, UploadFile
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+
 from pydantic import BaseModel
 
-from ansi import ANSI, Color, Style, dim_multiline
 from core.agents.manager import AgentManager
 from core.handlers.base import BaseHandler, FileHandler, FileType
 from core.handlers.dataframe import CsvToDataframe
-from core.prompts.error import ERROR_PROMPT
 from core.tools.base import BaseToolSet
 from core.tools.cpu import ExitConversation, RequestsGet
 from core.tools.editor import CodeEditor
 from core.tools.terminal import Terminal
 from core.upload import StaticUploader
 from env import settings
-from logger import logger
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory=StaticUploader.STATIC_DIR), name="static")
 uploader = StaticUploader.from_settings(settings)
+
+templates = Jinja2Templates(directory="api/templates")
 
 
 toolsets: List[BaseToolSet] = [
@@ -59,24 +62,36 @@ agent_manager = AgentManager.create(toolsets=toolsets)
 file_handler = FileHandler(handlers=handlers)
 
 
-class Request(BaseModel):
+class CommandRequest(BaseModel):
     key: str
     query: str
     files: List[str]
 
 
-class Response(TypedDict):
+class CommandResponse(TypedDict):
     response: str
     files: List[str]
 
 
-@app.get("/")
-async def index():
-    return {"message": f"Hello World. I'm {settings['BOT_NAME']}."}
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
+@app.post("/upload")
+async def create_upload_file(files: List[UploadFile]):
+    urls = []
+    for file in files:
+        extension = "." + file.filename.split(".")[-1]
+        with NamedTemporaryFile(suffix=extension) as tmp_file:
+            tmp_file.write(file.file.read())
+            tmp_file.flush()
+            urls.append(uploader.upload(tmp_file.name))
+    return {"urls": urls}
 
 
 @app.post("/command")
-async def command(request: Request) -> Response:
+async def command(request: CommandRequest) -> CommandResponse:
     query = request.query
     files = request.files
     session = request.key
@@ -101,3 +116,7 @@ async def command(request: Request) -> Response:
 
 def serve():
     uvicorn.run("api.main:app", host="0.0.0.0", port=settings["PORT"])
+
+
+def dev():
+    uvicorn.run("api.main:app", host="0.0.0.0", port=settings["PORT"], reload=True)

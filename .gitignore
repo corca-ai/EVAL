@@ -8,6 +8,6 @@ audio/
 video/
 dataframe/
 
-static/*
+static/generated
 
 playground/

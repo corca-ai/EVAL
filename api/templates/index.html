@@ -1,0 +1,28 @@
+{% extends "base.html" %} {% block head %}
+<script src="{{ url_for('static', path='/command.js') }}"></script>
+{% endblock %} {% block content %}
+<div class="container-fluid pb-3">
+  <div class="d-grid gap-3" style="grid-template-columns: 2fr 3fr">
+    <div class="bg-body-tertiary border rounded-3 p-3">
+      <div>
+        <div class="mb-3">
+          <label for="key" class="form-label">Session</label>
+          <input id="key" name="key" class="form-control" />
+        </div>
+        <div class="mb-3">
+          <label for="query" class="form-label">Prompt</label>
+          <textarea id="query" name="query" class="form-control"></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="files" class="form-label">Files</label>
+          <input id="files" type="file" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary" onclick="submit(event)">
+          Submit
+        </button>
+      </div>
+    </div>
+    <div class="bg-body-tertiary border rounded-3"></div>
+  </div>
+</div>
+{% endblock %}

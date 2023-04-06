@@ -12,9 +12,11 @@ https://user-images.githubusercontent.com/51526347/230061897-b3479405-8ebd-45ab-
 
 EVAL Making a UI for itself
 
-### https://github.com/eval-bot  
+#### [EVAL-BOT](https://github.com/eval-bot)
 EVAL's self-managed github account. EVAL does everything except for signup and bio setting.
 
+### Examples
+[Here](examples/) is an example.
 ### EVAL's FEATURE
 
 1. **Multimodal Conversation**

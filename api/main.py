@@ -78,6 +78,11 @@ async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard(request: Request):
+    return templates.TemplateResponse("dashboard.html", {"request": request})
+
+
 @app.post("/upload")
 async def create_upload_file(files: List[UploadFile]):
     urls = []

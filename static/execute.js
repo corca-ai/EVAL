@@ -33,3 +33,8 @@ const submit = async () => {
   const { answer } = await response.json();
   document.getElementById("answer").textContent = answer;
 };
+
+const setRandomSessionId = () => {
+  const sessionId = Math.random().toString(36).substring(2, 15);
+  document.getElementById("session").value = sessionId;
+};

@@ -17,7 +17,8 @@ const submit = async () => {
 
   const query = document.getElementById("query").value;
   const key = document.getElementById("key").value;
-  fetch("/command", {
+
+  const response = await fetch("/command", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -28,5 +29,7 @@ const submit = async () => {
       files,
     }),
   });
-  return false;
+
+  const { response: answer } = await response.json();
+  document.getElementById("answer").textContent = answer;
 };

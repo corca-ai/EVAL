@@ -62,14 +62,14 @@ agent_manager = AgentManager.create(toolsets=toolsets)
 file_handler = FileHandler(handlers=handlers)
 
 
-class CommandRequest(BaseModel):
-    key: str
-    query: str
+class ExecuteRequest(BaseModel):
+    session: str
+    prompt: str
     files: List[str]
 
 
-class CommandResponse(TypedDict):
-    response: str
+class ExecuteResponse(TypedDict):
+    answer: str
     files: List[str]
 
 
@@ -90,11 +90,11 @@ async def create_upload_file(files: List[UploadFile]):
     return {"urls": urls}
 
 
-@app.post("/command")
-async def command(request: CommandRequest) -> CommandResponse:
-    query = request.query
+@app.post("/api/execute")
+async def execute(request: ExecuteRequest) -> ExecuteResponse:
+    query = request.prompt
     files = request.files
-    session = request.key
+    session = request.session
 
     executor = agent_manager.get_or_create_executor(session)
 
@@ -104,12 +104,12 @@ async def command(request: CommandRequest) -> CommandResponse:
     try:
         res = executor({"input": promptedQuery})
     except Exception as e:
-        return {"response": str(e), "files": []}
+        return {"answer": str(e), "files": []}
 
     files = re.findall("(image/\S*png)|(dataframe/\S*csv)", res["output"])
 
     return {
-        "response": res["output"],
+        "answer": res["output"],
         "files": [uploader.upload(file) for file in files],
     }
 

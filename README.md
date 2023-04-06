@@ -13,10 +13,13 @@ https://user-images.githubusercontent.com/51526347/230061897-b3479405-8ebd-45ab-
 EVAL Making a UI for itself
 
 #### [EVAL-BOT](https://github.com/eval-bot)
+
 EVAL's self-managed github account. EVAL does everything except for signup and bio setting.
 
 ### Examples
+
 [Here](examples/) is an example.
+
 ### EVAL's FEATURE
 
 1. **Multimodal Conversation**
@@ -107,20 +110,20 @@ Some tools requires environment variables. Set envs depend on which tools you wa
 
 ### 3. Send request to EVAL
 
-- `POST /command`
+- `POST /api/execute`
 
-  - `key` - session id
+  - `session` - session id
   - `files` - urls of file inputs
-  - `query` - prompt
+  - `prompt` - prompt
 
 - You can send request to EVAL with `curl` or `httpie`.
 
   ```bash
-  curl -X POST -H "Content-Type: application/json" -d '{"key": "sessionid", "files": ["https://example.com/image.png"], "query": "Hi there!"}' http://localhost:8000/command
+  curl -X POST -H "Content-Type: application/json" -d '{"session": "sessionid", "files": ["https://example.com/image.png"], "prompt": "Hi there!"}' http://localhost:8000/command
   ```
 
   ```bash
-  http POST http://localhost:8000/command key=sessionid files:='["https://example.com/image.png"]' query="Hi there!"
+  http POST http://localhost:8000/command session=sessionid files:='["https://example.com/image.png"]' prompt="Hi there!"
   ```
 
 - We are planning to make a GUI for EVAL so you can use it without terminal.

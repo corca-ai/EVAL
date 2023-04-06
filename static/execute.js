@@ -15,21 +15,21 @@ const submit = async () => {
     files.push(...urls);
   }
 
-  const query = document.getElementById("query").value;
-  const key = document.getElementById("key").value;
+  const prompt = document.getElementById("prompt").value;
+  const session = document.getElementById("session").value;
 
-  const response = await fetch("/command", {
+  const response = await fetch("/api/execute", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      query,
-      key,
+      prompt,
+      session,
       files,
     }),
   });
 
-  const { response: answer } = await response.json();
+  const { answer } = await response.json();
   document.getElementById("answer").textContent = answer;
 };

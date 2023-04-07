@@ -195,10 +195,14 @@ const createActionCard = (
       <div class="accordion-body">
         <table class="table">
           <tbody>
-            <tr>
-              <th style="width: 100px">Input</th>
-              <td><div>${input}</div></td>
-            </tr>
+            ${
+              action !== "Final Answer"
+                ? `<tr>
+                  <th style="width: 100px">Input</th>
+                  <td><div>${input}</div></td>
+                </tr>`
+                : ""
+            }
             <tr>
               <th style="width: 100px">What I Did</th>
               <td><div>${whatIdid}</div></td>
@@ -232,33 +236,31 @@ const createActionCard = (
                   <td>${p.replace("[x]", "")}</td>`
                   : ""
               }
-              ${
-                !p.startsWith("[ ]") && !p.startsWith("[x]")
-                  ? `<td></td><td>${p}</td>`
-                  : ""
-              }
               </tr>`
             )
             .join("")}
           </tbody>
         </table>
 
-        <table class="table">
-          <thead>
-            <tr>
-              <th colspan="2">Observation</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <div style="white-space: pre">${observation}</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        ${
+          action !== "Final Answer"
+            ? `<table class="table">
+            <thead>
+              <tr>
+                <th colspan="2">Observation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div>${observation}</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>`
+            : ""
+        }
       </div>
-
     </div>
   </div>
 </div>`;

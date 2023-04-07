@@ -4,6 +4,8 @@ write protocol:
 <filepath>
 <content>
 """
+import os
+
 from .verify import verify
 
 
@@ -21,6 +23,9 @@ class WriteCommand:
 
     @verify
     def execute(self) -> str:
+        dir_path = os.path.dirname(self.filepath)
+        if dir_path:
+            os.makedirs(dir_path, exist_ok=True)
         with open(self.filepath, self.mode) as f:
             f.write(self.content)
         return self.content

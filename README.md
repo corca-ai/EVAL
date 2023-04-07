@@ -13,10 +13,13 @@ https://user-images.githubusercontent.com/51526347/230061897-b3479405-8ebd-45ab-
 EVAL Making a UI for itself
 
 #### [EVAL-BOT](https://github.com/eval-bot)
+
 EVAL's self-managed github account. EVAL does everything except for signup and bio setting.
 
 ### Examples
+
 [Here](examples/) is an example.
+
 ### EVAL's FEATURE
 
 1. **Multimodal Conversation**
@@ -81,6 +84,7 @@ Each optional env has default value, so you don't need to set unless you want to
 - `SERVER` - server address (default: http://localhost:8000)
 - `LOG_LEVEL` - INFO | DEBUG (default: INFO)
 - `BOT_NAME` - give it a name! (default: Orca)
+- `MODEL_NAME` - model name for GPT (default: gpt-4)
 
 **For More Tools**
 

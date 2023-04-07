@@ -30,6 +30,7 @@ class DotEnv(TypedDict):
 EVAL_PORT = int(os.getenv("EVAL_PORT", 8000))
 settings: DotEnv = {
     "EVAL_PORT": EVAL_PORT,
+    "MODEL_NAME": os.getenv("MODEL_NAME", "gpt-4"),
     "SERVER": os.getenv("SERVER", f"http://localhost:{EVAL_PORT}"),
     "USE_GPU": os.getenv("USE_GPU", "False").lower() == "true",
     "PLAYGROUND_DIR": os.getenv("PLAYGROUND_DIR", "playground"),

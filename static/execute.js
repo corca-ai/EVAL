@@ -1,9 +1,19 @@
-const setAnswer = (answer) => {
+const setAnswer = (answer, files) => {
   document.getElementById("answer").textContent = answer;
+  const filesDiv = document.getElementById("response-files");
+  filesDiv.innerHTML = "";
+  files.forEach((file) => {
+    const a = document.createElement("a");
+    a.classList.add("icon-link");
+    a.href = file;
+    a.textContent = file.split("/").pop();
+    a.download = true;
+    filesDiv.appendChild(a);
+  });
 };
 
 const submit = async () => {
-  setAnswer("Loading...");
+  setAnswer("Loading...", []);
   const files = [];
   const rawfiles = document.getElementById("files").files;
 
@@ -35,8 +45,8 @@ const submit = async () => {
     }),
   });
 
-  const { answer } = await response.json();
-  setAnswer(answer);
+  const { answer, files: responseFiles } = await response.json();
+  setAnswer(answer, responseFiles);
 };
 
 const setRandomSessionId = () => {

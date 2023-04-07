@@ -196,11 +196,11 @@ const createActionCard = (
         <table class="table">
           <tbody>
             <tr>
-              <th>Input</th>
+              <th style="width: 100px">Input</th>
               <td><div>${input}</div></td>
             </tr>
             <tr>
-              <th>What I Did</th>
+              <th style="width: 100px">What I Did</th>
               <td><div>${whatIdid}</div></td>
             </tr>
           </tbody>

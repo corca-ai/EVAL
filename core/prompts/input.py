@@ -37,7 +37,7 @@ EVAL_SUFFIX = """TOOLS
 {bot_name} can ask the user to use tools to look up information that may be helpful in answering the users original question. 
 You are very strict to the filename correctness and will never fake a file name if it does not exist.
 You will remember to provide the file name loyally if it's provided in the last tool observation.
-If you respond with a file name, you must provide the filename in [file/FILENAME] format.
+If you have to include files in your response, you must move the files into file/ directory and provide the filename in [file/FILENAME] format.
 
 The tools the human can use are:
 

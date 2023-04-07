@@ -1,9 +1,12 @@
 import os
 import uuid
+import shutil
+from pathlib import Path
 from enum import Enum
 from typing import Dict
-
 import requests
+
+from env import settings
 
 
 class FileType(Enum):
@@ -51,8 +54,9 @@ class BaseHandler:
 
 
 class FileHandler:
-    def __init__(self, handlers: Dict[FileType, BaseHandler]):
+    def __init__(self, handlers: Dict[FileType, BaseHandler], path: Path):
         self.handlers = handlers
+        self.path = path
 
     def register(self, filetype: FileType, handler: BaseHandler) -> "FileHandler":
         self.handlers[filetype] = handler
@@ -72,6 +76,14 @@ class FileHandler:
 
     def handle(self, url: str) -> str:
         try:
-            return self.handlers[FileType.from_url(url)].handle(self.download(url))
+            if url.startswith(settings["SERVER"]):
+                local_filename = url[len(settings["SERVER"]) + 1 :]
+                src = self.path / local_filename
+                dst = self.path / settings["PLAYGROUND_DIR"] / local_filename
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                shutil.copy(src, dst)
+            else:
+                local_filename = self.download(url)
+            return self.handlers[FileType.from_url(url)].handle(local_filename)
         except Exception as e:
             return "Error: " + str(e)

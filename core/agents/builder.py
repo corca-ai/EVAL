@@ -19,6 +19,7 @@ class AgentBuilder:
 
     def build_llm(self):
         self.llm = ChatOpenAI(temperature=0)
+        self.llm.check_access()
 
     def build_parser(self):
         self.parser = EvalOutputParser()

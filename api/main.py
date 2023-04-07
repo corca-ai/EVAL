@@ -91,11 +91,21 @@ async def execute_async(request: ExecuteRequest):
 
 @app.get("/api/execute/async/{execution_id}")
 async def execute_async(execution_id: str):
-    result = get_task_result(execution_id)
+    execution = get_task_result(execution_id)
+
+    result = {}
+    if execution.status == "SUCCESS" and execution.result:
+        output = execution.result.get("output", "")
+        files = re.findall(r"\[file/\S*\]", output)
+        files = [file[1:-1] for file in files]
+        result = {
+            "answer": output,
+            "files": [uploader.upload(file) for file in files],
+        }
+
     return {
-        "task_id": execution_id,
-        "status": result.status,
-        "result": result.result,
+        "status": execution.status,
+        "result": result,
     }
 
 

@@ -12,47 +12,94 @@ const setAnswer = (answer, files) => {
   });
 };
 
-const submit = async () => {
-  setAnswer("Loading...", []);
-  const files = [];
-  const rawfiles = document.getElementById("files").files;
-
-  if (rawfiles.length > 0) {
-    const formData = new FormData();
-    for (let i = 0; i < rawfiles.length; i++) {
-      formData.append("files", rawfiles[i]);
-    }
-    const respone = await fetch("/upload", {
-      method: "POST",
-      body: formData,
-    });
-    const { urls } = await respone.json();
-    files.push(...urls);
+class EvalApi {
+  constructor({ onComplete, onError }) {
+    this.executionId = null;
+    this.pollInterval = null;
+    this.onComplete = onComplete;
+    this.onError = onError;
   }
+
+  async uploadFiles(rawfiles) {
+    const files = [];
+
+    if (rawfiles.length > 0) {
+      const formData = new FormData();
+      for (let i = 0; i < rawfiles.length; i++) {
+        formData.append("files", rawfiles[i]);
+      }
+      const respone = await fetch("/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const { urls } = await respone.json();
+      files.push(...urls);
+    }
+
+    return files;
+  }
+
+  async execute(prompt, session, files) {
+    try {
+      const response = await fetch("/api/execute/async", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt,
+          session,
+          files,
+        }),
+      });
+      if (response.status !== 200) {
+        throw new Error(await response.text());
+      }
+      const { id: executionId } = await response.json();
+      this.executionId = executionId;
+      this.pollInterval = setInterval(this.poll.bind(this), 1000);
+    } catch (e) {
+      clearInterval(this.pollInterval);
+      this.onError(e);
+    }
+  }
+
+  async poll() {
+    try {
+      const response = await fetch(`/api/execute/async/${this.executionId}`, {
+        method: "GET",
+      });
+      if (response.status !== 200) {
+        throw new Error(await response.text());
+      }
+      const { status, result } = await response.json();
+      if (status === "FAILURE") {
+        throw new Error("Execution failed");
+      }
+      if (status === "SUCCESS") {
+        clearInterval(this.pollInterval);
+        this.onComplete(result.answer, result.files);
+      }
+    } catch (e) {
+      clearInterval(this.pollInterval);
+      this.onError(e);
+    }
+  }
+}
+
+const submit = async () => {
+  setAnswer("Thinking...", []);
+
+  const api = new EvalApi({
+    onComplete: (answer, files) => setAnswer(answer, files),
+    onError: (error) => setAnswer(`Error: ${error.message}`),
+  });
 
   const prompt = document.getElementById("prompt").value;
   const session = document.getElementById("session").value;
+  const files = await api.uploadFiles(document.getElementById("files").files);
 
-  try {
-    const response = await fetch("/api/execute", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        prompt,
-        session,
-        files,
-      }),
-    });
-    if (response.status !== 200) {
-      throw new Error(await response.text());
-    }
-    const { answer, files: responseFiles } = await response.json();
-    setAnswer(answer, responseFiles);
-  } catch (e) {
-    setAnswer("Error: " + e.message, []);
-  }
+  await api.execute(prompt, session, files);
 };
 
 const setRandomSessionId = () => {

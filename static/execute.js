@@ -7,7 +7,7 @@ const setAnswer = (answer, files) => {
     a.classList.add("icon-link");
     a.href = file;
     a.textContent = file.split("/").pop();
-    a.download = true;
+    a.setAttribute("download", "");
     filesDiv.appendChild(a);
   });
 };
@@ -33,20 +33,26 @@ const submit = async () => {
   const prompt = document.getElementById("prompt").value;
   const session = document.getElementById("session").value;
 
-  const response = await fetch("/api/execute", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      prompt,
-      session,
-      files,
-    }),
-  });
-
-  const { answer, files: responseFiles } = await response.json();
-  setAnswer(answer, responseFiles);
+  try {
+    const response = await fetch("/api/execute", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt,
+        session,
+        files,
+      }),
+    });
+    if (response.status !== 200) {
+      throw new Error(await response.text());
+    }
+    const { answer, files: responseFiles } = await response.json();
+    setAnswer(answer, responseFiles);
+  } catch (e) {
+    setAnswer("Error: " + e.message, []);
+  }
 };
 
 const setRandomSessionId = () => {

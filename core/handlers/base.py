@@ -6,6 +6,8 @@ from enum import Enum
 from typing import Dict
 import requests
 
+from env import settings
+
 
 class FileType(Enum):
     IMAGE = "image"

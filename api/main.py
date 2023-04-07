@@ -26,6 +26,7 @@ app = FastAPI()
 
 
 BASE_DIR = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+os.chdir(BASE_DIR / settings["PLAYGROUND_DIR"])
 
 uploader = StaticUploader.from_settings(
     settings, path=BASE_DIR / "static", endpoint="static"
@@ -123,9 +124,6 @@ async def execute(request: ExecuteRequest) -> ExecuteResponse:
         "answer": res["output"],
         "files": [uploader.upload(file) for file in files],
     }
-
-
-os.chdir(BASE_DIR / settings["PLAYGROUND_DIR"])
 
 
 def serve():

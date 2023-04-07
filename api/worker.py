@@ -20,8 +20,13 @@ celery_app.conf.update(
 def task_execute(self, session: str, prompt: str):
     executor = agent_manager.create_executor(session, self)
     response = executor({"input": prompt})
+    result = {"output": response["output"]}
 
-    return {"output": response["output"]}
+    previous = AsyncResult(self.request.id)
+    if previous and previous.info:
+        result.update(previous.info)
+
+    return result
 
 
 def get_task_result(task_id):

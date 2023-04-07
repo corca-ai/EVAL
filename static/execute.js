@@ -35,8 +35,8 @@ class EvalApi {
   constructor({ onComplete, onError, onSettle, onLLMEnd, onToolEnd }) {
     this.executionId = null;
     this.pollInterval = null;
-    this.onComplete = (answer, files) => {
-      onComplete(answer, files);
+    this.onComplete = (answer, files, info) => {
+      onComplete(answer, files, info);
       onSettle();
     };
     this.onError = (error) => {
@@ -116,7 +116,7 @@ class EvalApi {
           break;
         case "SUCCESS":
           clearInterval(this.pollInterval);
-          this.onComplete(result.answer, result.files);
+          this.onComplete(result.answer, result.files, info);
           break;
       }
     } catch (e) {
@@ -131,36 +131,31 @@ const submit = async () => {
   setLoader(true);
 
   const actions = $("#actions");
+  actions.innerHTML = "";
+
+  const onInfo = (info) => {
+    const w = document.createElement("div");
+    w.innerHTML = createActionCard(
+      1,
+      info.action,
+      info.action_input,
+      info.what_i_did,
+      info.plan,
+      info.observation
+    );
+    actions.innerHTML = "";
+    actions.appendChild(w);
+  };
 
   const api = new EvalApi({
-    onComplete: (answer, files) => setAnswer(answer, files),
-    onError: (error) => setAnswer(`Error: ${error.message}`, []),
     onSettle: () => setLoader(false),
-    onLLMEnd: (info) => {
-      const w = document.createElement("div");
-      w.innerHTML = createActionCard(
-        1,
-        info.action,
-        info.action_input,
-        info.what_i_did,
-        info.plan
-      );
-      actions.innerHTML = "";
-      actions.appendChild(w);
+    onError: (error) => setAnswer(`Error: ${error.message}`, []),
+    onComplete: (answer, files, info) => {
+      setAnswer(answer, files);
+      onInfo(info);
     },
-    onToolEnd: (info) => {
-      const w = document.createElement("div");
-      w.innerHTML = createActionCard(
-        1,
-        info.action,
-        info.action_input,
-        info.what_i_did,
-        info.plan,
-        info.observation
-      );
-      actions.innerHTML = "";
-      actions.appendChild(w);
-    },
+    onLLMEnd: onInfo,
+    onToolEnd: onInfo,
   });
 
   const prompt = $("#prompt").value;

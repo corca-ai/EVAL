@@ -174,7 +174,10 @@ class ExecutionTracingCallbackHandler(BaseCallbackHandler):
     def on_tool_error(
         self, error: Union[Exception, KeyboardInterrupt], **kwargs: Any
     ) -> None:
-        self.execution.update_state(state="TOOL_ERROR", meta={"error": str(error)})
+        previous = self.execution.AsyncResult(self.execution.request.id)
+        self.execution.update_state(
+            state="TOOL_ERROR", meta={**previous.info, "error": str(error)}
+        )
 
     def on_text(
         self,
@@ -188,7 +191,4 @@ class ExecutionTracingCallbackHandler(BaseCallbackHandler):
     def on_agent_finish(
         self, finish: AgentFinish, color: Optional[str] = None, **kwargs: Any
     ) -> None:
-        self.execution.update_state(
-            state="AGENT_FINISH",
-            meta={"output": finish.return_values.get("output", "")},
-        )
+        pass

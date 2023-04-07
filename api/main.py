@@ -111,6 +111,8 @@ async def execute_async(execution_id: str):
 
 
 def serve():
+    p = Process(target=start_worker, args=[])
+    p.start()
     uvicorn.run("api.main:app", host="0.0.0.0", port=settings["EVAL_PORT"])
 
 

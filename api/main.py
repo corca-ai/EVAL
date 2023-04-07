@@ -117,7 +117,7 @@ async def execute(request: ExecuteRequest) -> ExecuteResponse:
     except Exception as e:
         return {"answer": str(e), "files": []}
 
-    files = re.findall("image/\S*png|dataframe/\S*csv", res["output"])
+    files = re.findall("[file/\S*]", res["output"])
 
     return {
         "answer": res["output"],

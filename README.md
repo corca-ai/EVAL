@@ -120,11 +120,11 @@ Some tools requires environment variables. Set envs depend on which tools you wa
 - You can send request to EVAL with `curl` or `httpie`.
 
   ```bash
-  curl -X POST -H "Content-Type: application/json" -d '{"session": "sessionid", "files": ["https://example.com/image.png"], "prompt": "Hi there!"}' http://localhost:8000/command
+  curl -X POST -H "Content-Type: application/json" -d '{"session": "sessionid", "files": [], "prompt": "Hi there!"}' http://localhost:8000/api/execute
   ```
 
   ```bash
-  http POST http://localhost:8000/command session=sessionid files:='["https://example.com/image.png"]' prompt="Hi there!"
+  http POST http://localhost:8000/api/execute session=sessionid files:='[]' prompt="Hi there!"
   ```
 
 - We are planning to make a GUI for EVAL so you can use it without terminal.

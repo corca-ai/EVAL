@@ -86,6 +86,17 @@ class FileHandler:
                 shutil.copy(src, dst)
             else:
                 local_filename = self.download(url)
-            return self.handlers[FileType.from_url(url)].handle(local_filename)
+
+            try:
+                handler = self.handlers[FileType.from_url(url)]
+            except KeyError:
+                if FileType.from_url(url) == FileType.IMAGE:
+                    raise Exception(
+                        f"No handler for {FileType.from_url(url)}. "
+                        f"Please set USE_GPU to True in env/settings.py"
+                    )
+                else:
+                    raise Exception(f"No handler for {FileType.from_url(url)}")
+            handler.handle(local_filename)
         except Exception as e:
             raise e

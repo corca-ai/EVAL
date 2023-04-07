@@ -1,9 +1,10 @@
 import os
-import uuid
 import shutil
-from pathlib import Path
+import uuid
 from enum import Enum
+from pathlib import Path
 from typing import Dict
+
 import requests
 
 from env import settings
@@ -77,8 +78,9 @@ class FileHandler:
     def handle(self, url: str) -> str:
         try:
             if url.startswith(settings["SERVER"]):
-                local_filename = url[len(settings["SERVER"]) + 1 :]
-                src = self.path / local_filename
+                local_filepath = url[len(settings["SERVER"]) + 1 :]
+                local_filename = Path("file") / local_filepath.split("/")[-1]
+                src = self.path / local_filepath
                 dst = self.path / settings["PLAYGROUND_DIR"] / local_filename
                 os.makedirs(os.path.dirname(dst), exist_ok=True)
                 shutil.copy(src, dst)
@@ -86,4 +88,4 @@ class FileHandler:
                 local_filename = self.download(url)
             return self.handlers[FileType.from_url(url)].handle(local_filename)
         except Exception as e:
-            return "Error: " + str(e)
+            raise e

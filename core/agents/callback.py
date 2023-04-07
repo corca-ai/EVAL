@@ -113,6 +113,7 @@ class EVALCallbackHandler(BaseCallbackHandler):
 class ExecutionTracingCallbackHandler(BaseCallbackHandler):
     def __init__(self, execution: Task):
         self.execution = execution
+        self.index = 0
 
     def set_parser(self, parser) -> None:
         self.parser = parser
@@ -125,6 +126,8 @@ class ExecutionTracingCallbackHandler(BaseCallbackHandler):
     def on_llm_end(self, response: LLMResult, **kwargs: Any) -> None:
         text = response.generations[0][0].text
         parsed = self.parser.parse_all(text)
+        self.index += 1
+        parsed["index"] = self.index
         self.execution.update_state(state="LLM_END", meta=parsed)
 
     def on_llm_new_token(self, token: str, **kwargs: Any) -> None:

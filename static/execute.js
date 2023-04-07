@@ -136,7 +136,7 @@ const submit = async () => {
   const onInfo = (info) => {
     const w = document.createElement("div");
     w.innerHTML = createActionCard(
-      1,
+      info.index,
       info.action,
       info.action_input,
       info.what_i_did,

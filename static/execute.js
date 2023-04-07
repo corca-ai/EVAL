@@ -1,3 +1,15 @@
+const setLoader = (isLoading) => {
+  const button = document.getElementById("submit");
+  const loader = document.getElementById("submit-loader");
+  if (isLoading) {
+    button.style.display = "none";
+    loader.style.display = "block";
+  } else {
+    button.style.display = "block";
+    loader.style.display = "none";
+  }
+};
+
 const setAnswer = (answer, files) => {
   document.getElementById("answer").textContent = answer;
   const filesDiv = document.getElementById("response-files");
@@ -13,11 +25,17 @@ const setAnswer = (answer, files) => {
 };
 
 class EvalApi {
-  constructor({ onComplete, onError }) {
+  constructor({ onComplete, onError, onSettle }) {
     this.executionId = null;
     this.pollInterval = null;
-    this.onComplete = onComplete;
-    this.onError = onError;
+    this.onComplete = (answer, files) => {
+      onComplete(answer, files);
+      onSettle();
+    };
+    this.onError = (error) => {
+      onError(error);
+      onSettle();
+    };
   }
 
   async uploadFiles(rawfiles) {
@@ -89,10 +107,12 @@ class EvalApi {
 
 const submit = async () => {
   setAnswer("Thinking...", []);
+  setLoader(true);
 
   const api = new EvalApi({
     onComplete: (answer, files) => setAnswer(answer, files),
-    onError: (error) => setAnswer(`Error: ${error.message}`),
+    onError: (error) => setAnswer(`Error: ${error.message}`, []),
+    onSettle: () => setLoader(false),
   });
 
   const prompt = document.getElementById("prompt").value;

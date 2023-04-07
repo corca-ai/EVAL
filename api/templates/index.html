@@ -17,8 +17,21 @@
           <label for="session" class="form-label">Session</label>
           <input id="session" name="session" class="form-control" />
         </div>
-        <button type="submit" class="btn btn-primary" onclick="submit(event)">
+        <button
+          id="submit"
+          type="submit"
+          class="btn btn-primary"
+          onclick="submit(event)"
+        >
           Submit
+        </button>
+        <button
+          id="submit-loader"
+          class="btn btn-primary disabled"
+          style="display: none"
+        >
+          Submit
+          <div class="spinner-border spinner-border-sm"></div>
         </button>
       </div>
     </div>

@@ -1,5 +1,13 @@
+const setUrl = (answer) => {
+  return answer.replace(
+    /(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.?[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))/g,
+    (x) => '<a href="' + x + '">' + x + "</a>"
+  );
+};
+
 const setAnswer = (answer, files) => {
-  document.getElementById("answer").textContent = answer;
+  answer = setUrl(answer);
+  document.getElementById("answer").innerHTML = answer;
   const filesDiv = document.getElementById("response-files");
   filesDiv.innerHTML = "";
   files.forEach((file) => {

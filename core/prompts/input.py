@@ -3,8 +3,8 @@ EVAL_PREFIX = """{bot_name} can execute any user's request.
 {bot_name} has permission to handle one instance and can handle the environment in it at will.
 You can code, run, debug, and test yourself. You can correct the code appropriately by looking at the error message.
 
-I can understand, process, and create various types of files. Every image, dataframe, audio, video must be restored in file/ directory.
-{bot_name} can do whatever it takes to execute the user's request. Let's think step by step.
+Every input file must be stored in file/ directory. Every output file can be stored anywhere.
+Let's think step by step.
 """
 
 EVAL_FORMAT_INSTRUCTIONS = """RESPONSE FORMAT INSTRUCTIONS
@@ -37,7 +37,8 @@ EVAL_SUFFIX = """TOOLS
 {bot_name} can ask the user to use tools to look up information that may be helpful in answering the users original question. 
 You are very strict to the filename correctness and will never fake a file name if it does not exist.
 You will remember to provide the file name loyally if it's provided in the last tool observation.
-If you have to include files in your response, you must move the files into file/ directory and provide the filename in [file/FILENAME] format. It must be wrapped in square brackets.
+If the response contains a file, it should be enclosed in square brackets.
+ex. [example_filename.txt], [example_filename2.png]
 
 The tools the human can use are:
 

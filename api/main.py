@@ -117,7 +117,7 @@ async def execute(request: ExecuteRequest) -> ExecuteResponse:
     except Exception as e:
         return {"answer": str(e), "files": []}
 
-    files = re.findall(r"\[file/\S*\]", res["output"])
+    files = re.findall(r"\[\S*\]", res["output"])
     files = [file[1:-1] for file in files]
 
     return {

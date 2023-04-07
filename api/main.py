@@ -57,7 +57,7 @@ async def execute(request: ExecuteRequest) -> ExecuteResponse:
     files = request.files
     session = request.session
 
-    executor = agent_manager.get_or_create_executor(session)
+    executor = agent_manager.create_executor(session)
 
     promptedQuery = "\n".join([file_handler.handle(file) for file in files])
     promptedQuery += query
@@ -67,7 +67,7 @@ async def execute(request: ExecuteRequest) -> ExecuteResponse:
     except Exception as e:
         return {"answer": str(e), "files": []}
 
-    files = re.findall(r"\[file/\S*\]", res["output"])
+    files = re.findall(r"\[file://\S*\]", res["output"])
     files = [file[1:-1] for file in files]
 
     return {
@@ -96,7 +96,7 @@ async def execute_async(execution_id: str):
     result = {}
     if execution.status == "SUCCESS" and execution.result:
         output = execution.result.get("output", "")
-        files = re.findall(r"\[file/\S*\]", output)
+        files = re.findall(r"\[file://\S*\]", output)
         files = [file[1:-1] for file in files]
         result = {
             "answer": output,
@@ -105,6 +105,7 @@ async def execute_async(execution_id: str):
 
     return {
         "status": execution.status,
+        "info": execution.info,
         "result": result,
     }
 

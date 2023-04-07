@@ -8,6 +8,7 @@ celery_app = Celery(__name__)
 celery_app.conf.broker_url = settings["CELERY_BROKER_URL"]
 celery_app.conf.result_backend = settings["CELERY_BROKER_URL"]
 celery_app.conf.update(
+    task_track_started=True,
     task_serializer="json",
     accept_content=["json"],  # Ignore other content
     result_serializer="json",
@@ -15,10 +16,11 @@ celery_app.conf.update(
 )
 
 
-@celery_app.task(name="task_execute")
-def task_execute(session: str, prompt: str):
-    executor = agent_manager.get_or_create_executor(session)
+@celery_app.task(name="task_execute", bind=True)
+def task_execute(self, session: str, prompt: str):
+    executor = agent_manager.create_executor(session, self)
     response = executor({"input": prompt})
+
     return {"output": response["output"]}
 
 

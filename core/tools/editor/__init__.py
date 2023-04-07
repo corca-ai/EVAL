@@ -55,16 +55,12 @@ class CodeEditor(BaseToolSet):
         "Input should be filename and code to append. "
         "Input code must be the code that should be appended, NOT whole code. "
         "ex. test.py\nprint('hello world')\n "
-        "and the output will be last 3 line.",
+        "and the output will be last 3 lines.",
     )
     def append(self, inputs: str) -> str:
         try:
             code = CodeWriter.append(inputs)
-            output = (
-                "Last 3 line was:\n"
-                + "\n".join(code.split("\n")[-3:])
-                + "\nYou can use CodeEditor.APPEND tool to append the code if this file is not completed."
-            )
+            output = "Last 3 line was:\n" + "\n".join(code.split("\n")[-3:])
         except Exception as e:
             output = str(e)
 
@@ -80,16 +76,12 @@ class CodeEditor(BaseToolSet):
         "If the code is completed, use the Terminal tool to execute it, if not, append the code through the CodeEditor.APPEND tool. "
         "Input should be filename and code. This file must be in playground folder. "
         "ex. test.py\nprint('hello world')\n "
-        "and the output will be last 3 line.",
+        "and the output will be last 3 lines.",
     )
     def write(self, inputs: str) -> str:
         try:
             code = CodeWriter.write(inputs)
-            output = (
-                "Last 3 line was:\n"
-                + "\n".join(code.split("\n")[-3:])
-                + "\nYou can use CodeEditor.APPEND tool to append the code if this file is not completed."
-            )
+            output = "Last 3 line was:\n" + "\n".join(code.split("\n")[-3:])
         except Exception as e:
             output = str(e)
 
@@ -136,7 +128,6 @@ class CodeEditor(BaseToolSet):
         "Output will be success or error message.",
     )
     def delete(self, inputs: str) -> str:
-        filepath: str = str(Path(settings["PLAYGROUND_DIR"]) / Path(inputs))
         try:
             with open(filepath, "w") as f:
                 f.write("")

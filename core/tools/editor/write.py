@@ -9,12 +9,14 @@ from pathlib import Path
 
 from env import settings
 
+from .verify import verify
+
 
 class WriteCommand:
     separator = "\n"
 
     def __init__(self, filepath: str, content: int):
-        self.filepath: str = str(Path(settings["PLAYGROUND_DIR"]) / Path(filepath))
+        self.filepath: str = filepath
         self.content: str = content
         self.mode: str = "w"
 
@@ -22,14 +24,8 @@ class WriteCommand:
         self.mode = mode
         return self
 
+    @verify
     def execute(self) -> str:
-        # make sure the directory exists
-        if not str(Path(self.filepath).resolve()).startswith(
-            str(Path(settings["PLAYGROUND_DIR"]).resolve())
-        ):
-            return "You can't write file outside of current directory."
-
-        os.makedirs(os.path.dirname(self.filepath), exist_ok=True)
         with open(self.filepath, self.mode) as f:
             f.write(self.content)
         return self.content

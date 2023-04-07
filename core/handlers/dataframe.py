@@ -9,7 +9,7 @@ class CsvToDataframe(BaseHandler):
     def handle(self, filename: str):
         df = pd.read_csv(filename)
         description = (
-            f"Dataframe with {len(df)} rows and {len(df.columns)} columns."
+            f"Dataframe with {len(df)} rows and {len(df.columns)} columns. "
             "Columns are: "
             f"{', '.join(df.columns)}"
         )

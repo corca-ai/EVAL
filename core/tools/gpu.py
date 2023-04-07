@@ -76,7 +76,7 @@ class ImageEditing(BaseToolSet):
         name="Remove Something From The Photo",
         description="useful when you want to remove and object or something from the photo "
         "from its description or location. "
-        "The input to this tool should be a comma seperated string of two, "
+        "The input to this tool should be a comma separated string of two, "
         "representing the image_path and the object need to be removed. ",
     )
     def inference_remove(self, inputs):
@@ -87,7 +87,7 @@ class ImageEditing(BaseToolSet):
         name="Replace Something From The Photo",
         description="useful when you want to replace an object from the object description or "
         "location with another object from its description. "
-        "The input to this tool should be a comma seperated string of three, "
+        "The input to this tool should be a comma separated string of three, "
         "representing the image_path, the object to be replaced, the object to be replaced with ",
     )
     def inference_replace(self, inputs):
@@ -132,7 +132,7 @@ class InstructPix2Pix(BaseToolSet):
         name="Instruct Image Using Text",
         description="useful when you want to the style of the image to be like the text. "
         "like: make it look like a painting. or make it like a robot. "
-        "The input to this tool should be a comma seperated string of two, "
+        "The input to this tool should be a comma separated string of two, "
         "representing the image_path and the text. ",
     )
     def inference(self, inputs):
@@ -202,7 +202,7 @@ class VisualQuestionAnswering(BaseToolSet):
         name="Answer Question About The Image",
         description="useful when you need an answer for a question based on an image. "
         "like: what is the background color of the last image, how many cats in this figure, what is in this figure. "
-        "The input to this tool should be a comma seperated string of two, representing the image_path and the question",
+        "The input to this tool should be a comma separated string of two, representing the image_path and the question",
     )
     def inference(self, inputs):
         image_path, question = inputs.split(",")

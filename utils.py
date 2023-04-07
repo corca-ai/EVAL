@@ -17,6 +17,7 @@ def seed_everything(seed):
         pass
     return seed
 
+
 def cut_dialogue_history(history_memory, keep_last_n_words=500):
     tokens = history_memory.split()
     n_tokens = len(tokens)

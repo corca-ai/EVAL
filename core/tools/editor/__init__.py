@@ -60,10 +60,7 @@ class CodeEditor(BaseToolSet):
     def append(self, inputs: str) -> str:
         try:
             code = CodeWriter.append(inputs)
-            output = (
-                "Last 3 line was:\n"
-                + "\n".join(code.split("\n")[-3:])
-            )
+            output = "Last 3 line was:\n" + "\n".join(code.split("\n")[-3:])
         except Exception as e:
             output = str(e)
 
@@ -84,10 +81,7 @@ class CodeEditor(BaseToolSet):
     def write(self, inputs: str) -> str:
         try:
             code = CodeWriter.write(inputs)
-            output = (
-                "Last 3 line was:\n"
-                + "\n".join(code.split("\n")[-3:])
-            )
+            output = "Last 3 line was:\n" + "\n".join(code.split("\n")[-3:])
         except Exception as e:
             output = str(e)
 

@@ -63,6 +63,8 @@ from typing import Tuple
 
 from env import settings
 
+from .verify import verify
+
 
 class Position:
     separator = ","
@@ -99,6 +101,7 @@ class PatchCommand:
             f.writelines(lines)
         return sum([len(line) for line in lines])
 
+    @verify
     def execute(self) -> Tuple[int, int]:
         os.makedirs(os.path.dirname(self.filepath), exist_ok=True)
         lines = self.read_lines()

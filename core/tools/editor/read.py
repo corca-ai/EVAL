@@ -8,6 +8,8 @@ from typing import List, Optional, Tuple
 
 from env import settings
 
+from .verify import verify
+
 
 class Line:
     def __init__(self, content: str, line_number: int, depth: int):
@@ -108,6 +110,7 @@ class ReadCommand:
         self.start: int = start
         self.end: int = end
 
+    @verify
     def execute(self) -> str:
         with open(self.filepath, "r") as f:
             code = f.readlines()
@@ -133,6 +136,7 @@ class SummaryCommand:
         self.depth: int = depth
         self.parent_content: Optional[str] = parent_content
 
+    @verify
     def execute(self) -> str:
         with open(self.filepath, "r") as f:
             code = f.readlines()
@@ -141,8 +145,6 @@ class SummaryCommand:
         for i, line in enumerate(code):
             if line.strip() != "":
                 code_tree.append(line, i + 1)
-
-        # code_tree.print()
 
         if self.parent_content is None:
             lines = code_tree.find_from_root(self.depth)

@@ -9,6 +9,8 @@ from pathlib import Path
 
 from env import settings
 
+from .verify import verify
+
 
 class WriteCommand:
     separator = "\n"
@@ -22,6 +24,7 @@ class WriteCommand:
         self.mode = mode
         return self
 
+    @verify
     def execute(self) -> str:
         with open(self.filepath, self.mode) as f:
             f.write(self.content)

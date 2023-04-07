@@ -3,6 +3,7 @@ import uuid
 import shutil
 from pathlib import Path
 from enum import Enum
+from pathlib import Path
 from typing import Dict
 import requests
 
@@ -67,6 +68,7 @@ class FileHandler:
         local_filename = os.path.join(
             filetype.value, str(uuid.uuid4())[0:8] + filetype.to_extension()
         )
+        os.makedirs(os.path.dirname(local_filename), exist_ok=True)
         with open(local_filename, "wb") as f:
             size = f.write(data)
         print(f"Inputs: {url} ({size//1000}MB)  => {local_filename}")

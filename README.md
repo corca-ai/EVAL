@@ -80,7 +80,7 @@ Manatory envs are required in order to serve EVAL.
 
 Each optional env has default value, so you don't need to set unless you want to change it.
 
-- `PORT` - port (default: 8000)
+- `EVAL_PORT` - port (default: 8000)
 - `SERVER` - server address (default: http://localhost:8000)
 - `LOG_LEVEL` - INFO | DEBUG (default: INFO)
 - `BOT_NAME` - give it a name! (default: Orca)

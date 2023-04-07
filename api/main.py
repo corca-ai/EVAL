@@ -1,3 +1,4 @@
+import os
 import re
 from tempfile import NamedTemporaryFile
 from typing import Dict, List, TypedDict
@@ -27,6 +28,7 @@ uploader = StaticUploader.from_settings(settings)
 
 templates = Jinja2Templates(directory="api/templates")
 
+os.chdir(settings["PLAYGROUND_DIR"])
 
 toolsets: List[BaseToolSet] = [
     Terminal(),
@@ -111,7 +113,7 @@ async def execute(request: ExecuteRequest) -> ExecuteResponse:
     except Exception as e:
         return {"answer": str(e), "files": []}
 
-    files = re.findall("(image/\S*png)|(dataframe/\S*csv)", res["output"])
+    files = re.findall("image/\S*png|dataframe/\S*csv", res["output"])
 
     return {
         "answer": res["output"],
@@ -120,8 +122,8 @@ async def execute(request: ExecuteRequest) -> ExecuteResponse:
 
 
 def serve():
-    uvicorn.run("api.main:app", host="0.0.0.0", port=settings["PORT"])
+    uvicorn.run("api.main:app", host="0.0.0.0", port=settings["EVAL_PORT"])
 
 
 def dev():
-    uvicorn.run("api.main:app", host="0.0.0.0", port=settings["PORT"], reload=True)
+    uvicorn.run("api.main:app", host="0.0.0.0", port=settings["EVAL_PORT"], reload=True)

@@ -4,11 +4,6 @@ write protocol:
 <filepath>
 <content>
 """
-import os
-from pathlib import Path
-
-from env import settings
-
 from .verify import verify
 
 

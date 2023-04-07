@@ -1,12 +1,9 @@
 import os
 import uuid
 from enum import Enum
-from pathlib import Path
 from typing import Dict
 
 import requests
-
-from env import settings
 
 
 class FileType(Enum):
@@ -65,7 +62,7 @@ class FileHandler:
         filetype = FileType.from_url(url)
         data = requests.get(url).content
         local_filename = os.path.join(
-            filetype.value, str(uuid.uuid4())[0:8] + filetype.to_extension()
+            "file", str(uuid.uuid4())[0:8] + filetype.to_extension()
         )
         os.makedirs(os.path.dirname(local_filename), exist_ok=True)
         with open(local_filename, "wb") as f:

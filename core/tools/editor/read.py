@@ -3,10 +3,7 @@ read protocol:
 
 <filepath>|<start line>-<end line>
 """
-from pathlib import Path
-from typing import List, Optional, Tuple
-
-from env import settings
+from typing import List, Optional
 
 from .verify import verify
 

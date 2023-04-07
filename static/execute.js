@@ -133,7 +133,13 @@ const submit = async () => {
   const actions = $("#actions");
   actions.innerHTML = "";
 
+  let currentActionIndex = 0;
+
   const onInfo = (info) => {
+    if (currentActionIndex >= info.index) {
+      return;
+    }
+    currentActionIndex = info.index;
     const w = document.createElement("div");
     w.innerHTML = createActionCard(
       info.index,
@@ -143,7 +149,6 @@ const submit = async () => {
       info.plan,
       info.observation
     );
-    actions.innerHTML = "";
     actions.appendChild(w);
   };
 
@@ -184,11 +189,17 @@ const createActionCard = (
   plan,
   observation
 ) => `
-<div class="accordion">
+<div class="accordion m-2">
   <div class="accordion-item">
     <h2 class="accordion-header">
       <button class="accordion-button">
-        Action #${index} - ${action}
+        <span class="text-secondary">
+          Action #${index}
+        </span>
+        <span class="mx-1">-</span>
+        <span class="fw-bold">
+          ${action}
+        </span>
       </button>
     </h2>
     <div class="accordion-collapse collapse show">

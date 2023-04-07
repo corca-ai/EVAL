@@ -12,6 +12,7 @@ class DotEnv(TypedDict):
     EVAL_PORT: int
     SERVER: str
 
+    CELERY_BROKER_URL: str
     USE_GPU: bool  # optional
     PLAYGROUND_DIR: str  # optional
     LOG_LEVEL: str  # optional
@@ -31,6 +32,7 @@ EVAL_PORT = int(os.getenv("EVAL_PORT", 8000))
 settings: DotEnv = {
     "EVAL_PORT": EVAL_PORT,
     "MODEL_NAME": os.getenv("MODEL_NAME", "gpt-4"),
+    "CELERY_BROKER_URL": os.getenv("CELERY_BROKER_URL", "redis://localhost:6379"),
     "SERVER": os.getenv("SERVER", f"http://localhost:{EVAL_PORT}"),
     "USE_GPU": os.getenv("USE_GPU", "False").lower() == "true",
     "PLAYGROUND_DIR": os.getenv("PLAYGROUND_DIR", "playground"),

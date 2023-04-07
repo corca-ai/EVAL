@@ -1,5 +1,6 @@
 import os
 import re
+from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Dict, List, TypedDict
 
@@ -23,12 +24,15 @@ from env import settings
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory=StaticUploader.STATIC_DIR), name="static")
-uploader = StaticUploader.from_settings(settings)
 
-templates = Jinja2Templates(directory="api/templates")
+BASE_DIR = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-os.chdir(settings["PLAYGROUND_DIR"])
+uploader = StaticUploader.from_settings(
+    settings, path=BASE_DIR / "static", endpoint="static"
+)
+app.mount("/static", StaticFiles(directory=uploader.path), name="static")
+
+templates = Jinja2Templates(directory=BASE_DIR / "api" / "templates")
 
 toolsets: List[BaseToolSet] = [
     Terminal(),
@@ -61,7 +65,7 @@ if settings["USE_GPU"]:
         handlers[FileType.IMAGE] = ImageCaptioning("cuda")
 
 agent_manager = AgentManager.create(toolsets=toolsets)
-file_handler = FileHandler(handlers=handlers)
+file_handler = FileHandler(handlers=handlers, path=BASE_DIR)
 
 
 class ExecuteRequest(BaseModel):
@@ -121,9 +125,18 @@ async def execute(request: ExecuteRequest) -> ExecuteResponse:
     }
 
 
+os.chdir(BASE_DIR / settings["PLAYGROUND_DIR"])
+
+
 def serve():
     uvicorn.run("api.main:app", host="0.0.0.0", port=settings["EVAL_PORT"])
 
 
 def dev():
-    uvicorn.run("api.main:app", host="0.0.0.0", port=settings["EVAL_PORT"], reload=True)
+    uvicorn.run(
+        "api.main:app",
+        host="0.0.0.0",
+        port=settings["EVAL_PORT"],
+        reload=True,
+        reload_dirs=[BASE_DIR / "core", BASE_DIR / "api"],
+    )

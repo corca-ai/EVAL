@@ -55,8 +55,9 @@ class BaseHandler:
 
 
 class FileHandler:
-    def __init__(self, handlers: Dict[FileType, BaseHandler]):
+    def __init__(self, handlers: Dict[FileType, BaseHandler], path: Path):
         self.handlers = handlers
+        self.path = path
 
     def register(self, filetype: FileType, handler: BaseHandler) -> "FileHandler":
         self.handlers[filetype] = handler
@@ -78,10 +79,10 @@ class FileHandler:
         try:
             if url.startswith(settings["SERVER"]):
                 local_filename = url[len(settings["SERVER"]) + 1 :]
-                shutil.copy(
-                    local_filename,
-                    Path(settings["PLAYGROUND_DIR"]) / Path(local_filename),
-                )
+                src = self.path / local_filename
+                dst = self.path / settings["PLAYGROUND_DIR"] / local_filename
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                shutil.copy(src, dst)
             else:
                 local_filename = self.download(url)
             return self.handlers[FileType.from_url(url)].handle(local_filename)

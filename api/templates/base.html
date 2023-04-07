@@ -11,6 +11,7 @@
       integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ"
       crossorigin="anonymous"
     />
+    <link rel="icon" href="{{ url_for('static', path='/eval.png') }}" />
     {% block head %} {% endblock %}
   </head>
   <body>
@@ -24,6 +25,11 @@
         <svg class="bi me-2" width="40" height="32">
           <use xlink:href="#bootstrap"></use>
         </svg>
+        <img
+          class="logo"
+          src="{{ url_for('static', path='/eval.png') }}"
+          alt="logo"
+        />
         <span class="fs-4">EVAL</span>
       </a>
       <ul class="nav nav-pills">

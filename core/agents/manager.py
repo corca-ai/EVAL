@@ -1,9 +1,9 @@
-from typing import Dict
+from typing import Dict, Optional
+from celery import Task
 
-from langchain.agents.agent import Agent, AgentExecutor
-from langchain.agents.tools import BaseTool
-from langchain.callbacks import set_handler
+from langchain.agents.agent import AgentExecutor
 from langchain.callbacks.base import CallbackManager
+from langchain.callbacks import set_handler
 from langchain.chains.conversation.memory import ConversationBufferMemory
 from langchain.memory.chat_memory import BaseChatMemory
 
@@ -11,68 +11,73 @@ from core.tools.base import BaseToolSet
 from core.tools.factory import ToolsFactory
 
 from .builder import AgentBuilder
-from .callback import EVALCallbackHandler
+from .callback import EVALCallbackHandler, ExecutionTracingCallbackHandler
 
-callback_manager = CallbackManager([EVALCallbackHandler()])
+
 set_handler(EVALCallbackHandler())
 
 
 class AgentManager:
     def __init__(
         self,
-        agent: Agent,
-        global_tools: list[BaseTool],
         toolsets: list[BaseToolSet] = [],
     ):
-        self.agent: Agent = agent
-        self.global_tools: list[BaseTool] = global_tools
         self.toolsets: list[BaseToolSet] = toolsets
+        self.memories: Dict[str, BaseChatMemory] = {}
         self.executors: Dict[str, AgentExecutor] = {}
 
     def create_memory(self) -> BaseChatMemory:
         return ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
-    def create_executor(self, session: str) -> AgentExecutor:
-        memory: BaseChatMemory = self.create_memory()
+    def get_or_create_memory(self, session: str) -> BaseChatMemory:
+        if not (session in self.memories):
+            self.memories[session] = self.create_memory()
+        return self.memories[session]
+
+    def create_executor(
+        self, session: str, execution: Optional[Task] = None
+    ) -> AgentExecutor:
+        builder = AgentBuilder(self.toolsets)
+        builder.build_parser()
+
+        callbacks = []
+        eval_callback = EVALCallbackHandler()
+        eval_callback.set_parser(builder.get_parser())
+        callbacks.append(eval_callback)
+        if execution:
+            execution_callback = ExecutionTracingCallbackHandler(execution)
+            execution_callback.set_parser(builder.get_parser())
+            callbacks.append(execution_callback)
+
+        callback_manager = CallbackManager(callbacks)
+
+        builder.build_llm(callback_manager)
+        builder.build_global_tools()
+
+        memory: BaseChatMemory = self.get_or_create_memory(session)
         tools = [
-            *self.global_tools,
+            *builder.get_global_tools(),
             *ToolsFactory.create_per_session_tools(
                 self.toolsets,
                 get_session=lambda: (session, self.executors[session]),
             ),
         ]
-        for tool in tools:
-            tool.set_callback_manager(callback_manager)
 
-        return AgentExecutor.from_agent_and_tools(
-            agent=self.agent,
+        for tool in tools:
+            tool.callback_manager = callback_manager
+
+        executor = AgentExecutor.from_agent_and_tools(
+            agent=builder.get_agent(),
             tools=tools,
             memory=memory,
             callback_manager=callback_manager,
             verbose=True,
         )
-
-    def remove_executor(self, session: str) -> None:
-        if session in self.executors:
-            del self.executors[session]
-
-    def get_or_create_executor(self, session: str) -> AgentExecutor:
-        if not (session in self.executors):
-            self.executors[session] = self.create_executor(session=session)
-        return self.executors[session]
+        self.executors[session] = executor
+        return executor
 
     @staticmethod
     def create(toolsets: list[BaseToolSet]) -> "AgentManager":
-        builder = AgentBuilder(toolsets)
-        builder.build_llm()
-        builder.build_parser()
-        builder.build_global_tools()
-
-        agent = builder.get_agent()
-        global_tools = builder.get_global_tools()
-
         return AgentManager(
-            agent=agent,
-            global_tools=global_tools,
             toolsets=toolsets,
         )

@@ -111,23 +111,32 @@ Some tools requires environment variables. Set envs depend on which tools you wa
 
 ### 3. Send request to EVAL
 
-- `POST /api/execute`
+- Use the Web GUI to use EVAL in ease
 
-  - `session` - session id
-  - `files` - urls of file inputs
-  - `prompt` - prompt
+  - Go to `http://localhost:8000` in your browser
+    <img src="assets/gui.png" />
 
-- You can send request to EVAL with `curl` or `httpie`.
+- Or you can manually send request to EVAL with APIs.
 
-  ```bash
-  curl -X POST -H "Content-Type: application/json" -d '{"session": "sessionid", "files": [], "prompt": "Hi there!"}' http://localhost:8000/api/execute
-  ```
+  - `POST /api/execute`
 
-  ```bash
-  http POST http://localhost:8000/api/execute session=sessionid files:='[]' prompt="Hi there!"
-  ```
+    - `session` - session id
+    - `files` - urls of file inputs
+    - `prompt` - prompt
 
-- We are planning to make a GUI for EVAL so you can use it without terminal.
+    - examples
+
+      ```bash
+      curl -X POST -H "Content-Type: application/json" -d '{"session": "sessionid", "files": [], "prompt": "Hi there!"}' http://localhost:8000/api/execute
+      ```
+
+      ```bash
+      http POST http://localhost:8000/api/execute session=sessionid files:='[]' prompt="Hi there!"
+      ```
+
+- It also supports asynchronous execution. You can use `POST /api/execute/async` instead of `POST /api/execute`, with same body.
+
+  - It returns `id` of the execution. Use `GET /api/execute/async/{id}` to get the result.
 
 ## TODO
 

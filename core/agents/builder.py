@@ -4,6 +4,7 @@ from core.tools.factory import ToolsFactory
 from env import settings
 from langchain.chat_models.base import BaseChatModel
 from langchain.output_parsers.base import BaseOutputParser
+from langchain.callbacks.base import BaseCallbackManager
 
 from .chat_agent import ConversationalChatAgent
 from .llm import ChatOpenAI
@@ -17,8 +18,10 @@ class AgentBuilder:
         self.global_tools: list = None
         self.toolsets = toolsets
 
-    def build_llm(self):
-        self.llm = ChatOpenAI(temperature=0)
+    def build_llm(self, callback_manager: BaseCallbackManager = None):
+        self.llm = ChatOpenAI(
+            temperature=0, callback_manager=callback_manager, verbose=True
+        )
         self.llm.check_access()
 
     def build_parser(self):
@@ -39,6 +42,12 @@ class AgentBuilder:
             *ToolsFactory.create_global_tools_from_names(toolnames, llm=self.llm),
             *ToolsFactory.create_global_tools(self.toolsets),
         ]
+
+    def get_parser(self):
+        if self.parser is None:
+            raise ValueError("Parser is not initialized yet")
+
+        return self.parser
 
     def get_global_tools(self):
         if self.global_tools is None:

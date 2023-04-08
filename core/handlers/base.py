@@ -1,9 +1,13 @@
 import os
+import shutil
 import uuid
 from enum import Enum
+from pathlib import Path
 from typing import Dict
 
 import requests
+
+from env import settings
 
 
 class FileType(Enum):
@@ -51,8 +55,9 @@ class BaseHandler:
 
 
 class FileHandler:
-    def __init__(self, handlers: Dict[FileType, BaseHandler]):
+    def __init__(self, handlers: Dict[FileType, BaseHandler], path: Path):
         self.handlers = handlers
+        self.path = path
 
     def register(self, filetype: FileType, handler: BaseHandler) -> "FileHandler":
         self.handlers[filetype] = handler
@@ -62,8 +67,9 @@ class FileHandler:
         filetype = FileType.from_url(url)
         data = requests.get(url).content
         local_filename = os.path.join(
-            filetype.value, str(uuid.uuid4())[0:8] + filetype.to_extension()
+            "file", str(uuid.uuid4())[0:8] + filetype.to_extension()
         )
+        os.makedirs(os.path.dirname(local_filename), exist_ok=True)
         with open(local_filename, "wb") as f:
             size = f.write(data)
         print(f"Inputs: {url} ({size//1000}MB)  => {local_filename}")
@@ -71,6 +77,26 @@ class FileHandler:
 
     def handle(self, url: str) -> str:
         try:
-            return self.handlers[FileType.from_url(url)].handle(self.download(url))
+            if url.startswith(settings["SERVER"]):
+                local_filepath = url[len(settings["SERVER"]) + 1 :]
+                local_filename = Path("file") / local_filepath.split("/")[-1]
+                src = self.path / local_filepath
+                dst = self.path / settings["PLAYGROUND_DIR"] / local_filename
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                shutil.copy(src, dst)
+            else:
+                local_filename = self.download(url)
+
+            try:
+                handler = self.handlers[FileType.from_url(url)]
+            except KeyError:
+                if FileType.from_url(url) == FileType.IMAGE:
+                    raise Exception(
+                        f"No handler for {FileType.from_url(url)}. "
+                        f"Please set USE_GPU to True in env/settings.py"
+                    )
+                else:
+                    raise Exception(f"No handler for {FileType.from_url(url)}")
+            handler.handle(local_filename)
         except Exception as e:
-            return "Error: " + str(e)
+            raise e

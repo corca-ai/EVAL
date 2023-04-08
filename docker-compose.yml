@@ -12,10 +12,14 @@ services:
       - ./playground/:/app/playground/
     ports:
       - "4500:4500"
-      - "7000:7000"
+      - "6500:6500"
       - "8000:8000" # eval port
     env_file:
       - .env
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379
+    depends_on:
+      - redis
 
   eval.gpu:
     container_name: eval.gpu
@@ -29,7 +33,7 @@ services:
       - ./playground/:/app/playground/
     ports:
       - "4500:4500"
-      - "7000:7000"
+      - "6500:6500"
       - "8000:8000" # eval port
     env_file:
       - .env
@@ -40,3 +44,8 @@ services:
             - driver: nvidia
               device_ids: ["1"] # You can choose which GPU to use
               capabilities: [gpu]
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine

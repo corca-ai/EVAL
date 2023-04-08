@@ -12,8 +12,13 @@ https://user-images.githubusercontent.com/51526347/230061897-b3479405-8ebd-45ab-
 
 EVAL Making a UI for itself
 
-### https://github.com/eval-bot  
+#### [EVAL-BOT](https://github.com/eval-bot)
+
 EVAL's self-managed github account. EVAL does everything except for signup and bio setting.
+
+### Examples
+
+[Here](examples/) is an example.
 
 ### EVAL's FEATURE
 
@@ -75,10 +80,11 @@ Manatory envs are required in order to serve EVAL.
 
 Each optional env has default value, so you don't need to set unless you want to change it.
 
-- `PORT` - port (default: 8000)
+- `EVAL_PORT` - port (default: 8000)
 - `SERVER` - server address (default: http://localhost:8000)
 - `LOG_LEVEL` - INFO | DEBUG (default: INFO)
 - `BOT_NAME` - give it a name! (default: Orca)
+- `MODEL_NAME` - model name for GPT (default: gpt-4)
 
 **For More Tools**
 
@@ -105,23 +111,32 @@ Some tools requires environment variables. Set envs depend on which tools you wa
 
 ### 3. Send request to EVAL
 
-- `POST /command`
+- Use the Web GUI to use EVAL in ease
 
-  - `key` - session id
-  - `files` - urls of file inputs
-  - `query` - prompt
+  - Go to `http://localhost:8000` in your browser
+    <img src="assets/gui.png" />
 
-- You can send request to EVAL with `curl` or `httpie`.
+- Or you can manually send request to EVAL with APIs.
 
-  ```bash
-  curl -X POST -H "Content-Type: application/json" -d '{"key": "sessionid", "files": ["https://example.com/image.png"], "query": "Hi there!"}' http://localhost:8000/command
-  ```
+  - `POST /api/execute`
 
-  ```bash
-  http POST http://localhost:8000/command key=sessionid files:='["https://example.com/image.png"]' query="Hi there!"
-  ```
+    - `session` - session id
+    - `files` - urls of file inputs
+    - `prompt` - prompt
 
-- We are planning to make a GUI for EVAL so you can use it without terminal.
+    - examples
+
+      ```bash
+      curl -X POST -H "Content-Type: application/json" -d '{"session": "sessionid", "files": [], "prompt": "Hi there!"}' http://localhost:8000/api/execute
+      ```
+
+      ```bash
+      http POST http://localhost:8000/api/execute session=sessionid files:='[]' prompt="Hi there!"
+      ```
+
+- It also supports asynchronous execution. You can use `POST /api/execute/async` instead of `POST /api/execute`, with same body.
+
+  - It returns `id` of the execution. Use `GET /api/execute/async/{id}` to get the result.
 
 ## TODO
 

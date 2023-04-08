@@ -55,16 +55,12 @@ class CodeEditor(BaseToolSet):
         "Input should be filename and code to append. "
         "Input code must be the code that should be appended, NOT whole code. "
         "ex. test.py\nprint('hello world')\n "
-        "and the output will be last 3 line.",
+        "and the output will be last 3 lines.",
     )
     def append(self, inputs: str) -> str:
         try:
             code = CodeWriter.append(inputs)
-            output = (
-                "Last 3 line was:\n"
-                + "\n".join(code.split("\n")[-3:])
-                + "\nYou can use CodeEditor.APPEND tool to append the code if this file is not completed."
-            )
+            output = "Last 3 line was:\n" + "\n".join(code.split("\n")[-3:])
         except Exception as e:
             output = str(e)
 
@@ -88,11 +84,7 @@ class CodeEditor(BaseToolSet):
     def write(self, inputs: str) -> str:
         try:
             code = CodeWriter.write(inputs)
-            output = (
-                "Last 3 line was:\n"
-                + "\n".join(code.split("\n")[-3:])
-                + "\nYou can use CodeEditor.APPEND tool to append the code if this file is not completed."
-            )
+            output = "Last 3 line was:\n" + "\n".join(code.split("\n")[-3:])
         except Exception as e:
             output = str(e)
 
@@ -101,23 +93,23 @@ class CodeEditor(BaseToolSet):
         )
         return output
 
-    @tool(
-        name="CodeEditor.PATCH",
-        description="Patch the code to correct the error if an error occurs or to improve it. "
-        "Input is a list of patches. The patch is separated by {seperator}. ".format(
-            seperator=CodePatcher.separator.replace("\n", "\\n")
-        )
-        + "Each patch has to be formatted like below.\n"
-        "<filepath>|<start_line>,<start_col>|<end_line>,<end_col>|<new_code>"
-        "Here is an example. If the original code is:\n"
-        "print('hello world')\n"
-        "and you want to change it to:\n"
-        "print('hi corca')\n"
-        "then the patch should be:\n"
-        "test.py|1,8|1,19|hi corca\n"
-        "Code between start and end will be replaced with new_code. "
-        "The output will be written/deleted bytes or error message. ",
-    )
+    # @tool(
+    #     name="CodeEditor.PATCH",
+    #     description="Patch the code to correct the error if an error occurs or to improve it. "
+    #     "Input is a list of patches. The patch is separated by {seperator}. ".format(
+    #         seperator=CodePatcher.separator.replace("\n", "\\n")
+    #     )
+    #     + "Each patch has to be formatted like below.\n"
+    #     "<filepath>|<start_line>,<start_col>|<end_line>,<end_col>|<new_code>"
+    #     "Here is an example. If the original code is:\n"
+    #     "print('hello world')\n"
+    #     "and you want to change it to:\n"
+    #     "print('hi corca')\n"
+    #     "then the patch should be:\n"
+    #     "test.py|1,8|1,19|hi corca\n"
+    #     "Code between start and end will be replaced with new_code. "
+    #     "The output will be written/deleted bytes or error message. ",
+    # )
     def patch(self, patches: str) -> str:
         try:
             w, d = CodePatcher.patch(patches)
@@ -139,7 +131,6 @@ class CodeEditor(BaseToolSet):
         "Output will be success or error message.",
     )
     def delete(self, inputs: str) -> str:
-        filepath: str = str(Path(settings["PLAYGROUND_DIR"]) / Path(inputs))
         try:
             with open(filepath, "w") as f:
                 f.write("")

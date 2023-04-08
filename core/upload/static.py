@@ -1,5 +1,6 @@
 import os
 import shutil
+from pathlib import Path
 
 from env import DotEnv
 
@@ -7,20 +8,22 @@ from .base import AbstractUploader
 
 
 class StaticUploader(AbstractUploader):
-    STATIC_DIR = "static"
-
-    def __init__(self, server: str):
+    def __init__(self, server: str, path: Path, endpoint: str):
         self.server = server
+        self.path = path
+        self.endpoint = endpoint
 
     @staticmethod
-    def from_settings(settings: DotEnv) -> "StaticUploader":
-        return StaticUploader(settings["SERVER"])
+    def from_settings(settings: DotEnv, path: Path, endpoint: str) -> "StaticUploader":
+        return StaticUploader(settings["SERVER"], path, endpoint)
 
     def get_url(self, uploaded_path: str) -> str:
         return f"{self.server}/{uploaded_path}"
 
     def upload(self, filepath: str):
-        upload_path = os.path.join(StaticUploader.STATIC_DIR, filepath)
-        os.makedirs(os.path.dirname(upload_path), exist_ok=True)
-        shutil.copy(filepath, upload_path)
-        return f"{self.server}/{upload_path}"
+        relative_path = Path("generated") / filepath.split("/")[-1]
+        file_path = self.path / relative_path
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        shutil.copy(filepath, file_path)
+        endpoint_path = self.endpoint / relative_path
+        return f"{self.server}/{endpoint_path}"

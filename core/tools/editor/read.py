@@ -3,10 +3,9 @@ read protocol:
 
 <filepath>|<start line>-<end line>
 """
-from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
-from env import settings
+from .verify import verify
 
 
 class Line:
@@ -104,16 +103,12 @@ class ReadCommand:
     separator = "|"
 
     def __init__(self, filepath: str, start: int, end: int):
-        self.filepath: str = str(Path(settings["PLAYGROUND_DIR"]) / Path(filepath))
+        self.filepath: str = filepath
         self.start: int = start
         self.end: int = end
 
+    @verify
     def execute(self) -> str:
-        if not str(Path(self.filepath).resolve()).startswith(
-            str(Path(settings["PLAYGROUND_DIR"]).resolve())
-        ):
-            return "You can't write file outside of current directory."
-
         with open(self.filepath, "r") as f:
             code = f.readlines()
 
@@ -134,16 +129,12 @@ class SummaryCommand:
     separator = "|"
 
     def __init__(self, filepath: str, depth: int, parent_content: Optional[str] = None):
-        self.filepath: str = str(Path(settings["PLAYGROUND_DIR"]) / Path(filepath))
+        self.filepath: str = filepath
         self.depth: int = depth
         self.parent_content: Optional[str] = parent_content
 
+    @verify
     def execute(self) -> str:
-        if not str(Path(self.filepath).resolve()).startswith(
-            str(Path(settings["PLAYGROUND_DIR"]).resolve())
-        ):
-            return "You can't write file outside of current directory."
-
         with open(self.filepath, "r") as f:
             code = f.readlines()
 
@@ -151,8 +142,6 @@ class SummaryCommand:
         for i, line in enumerate(code):
             if line.strip() != "":
                 code_tree.append(line, i + 1)
-
-        # code_tree.print()
 
         if self.parent_content is None:
             lines = code_tree.find_from_root(self.depth)

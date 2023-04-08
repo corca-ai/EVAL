@@ -7,6 +7,7 @@ packages = [{include = "api"}]
 
 [tool.poetry.scripts]
 serve = "api.main:serve"
+dev = "api.main:dev"
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -21,6 +22,10 @@ pillow = "^9.4.0"
 boto3 = "^1.26.94"
 uvicorn = "^0.21.1"
 python-ptrace = "^0.9.8"
+jinja2 = "^3.1.2"
+python-multipart = "^0.0.6"
+celery = "^5.2.7"
+redis = "^4.5.4"
 
 [tool.poetry.group.gpu]
 optional = true

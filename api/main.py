@@ -1,87 +1,63 @@
 import re
-from typing import Dict, List, TypedDict
+from multiprocessing import Process
+from tempfile import NamedTemporaryFile
+from typing import List, TypedDict
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, UploadFile
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from ansi import ANSI, Color, Style, dim_multiline
-from core.agents.manager import AgentManager
-from core.handlers.base import BaseHandler, FileHandler, FileType
-from core.handlers.dataframe import CsvToDataframe
-from core.prompts.error import ERROR_PROMPT
-from core.tools.base import BaseToolSet
-from core.tools.cpu import ExitConversation, RequestsGet
-from core.tools.editor import CodeEditor
-from core.tools.terminal import Terminal
-from core.upload import StaticUploader
+from api.container import agent_manager, file_handler, reload_dirs, templates, uploader
+from api.worker import get_task_result, start_worker, task_execute
 from env import settings
-from logger import logger
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory=StaticUploader.STATIC_DIR), name="static")
-uploader = StaticUploader.from_settings(settings)
+app.mount("/static", StaticFiles(directory=uploader.path), name="static")
 
 
-toolsets: List[BaseToolSet] = [
-    Terminal(),
-    CodeEditor(),
-    RequestsGet(),
-    ExitConversation(),
-]
-handlers: Dict[FileType, BaseHandler] = {FileType.DATAFRAME: CsvToDataframe()}
-
-if settings["USE_GPU"]:
-    import torch
-
-    from core.handlers.image import ImageCaptioning
-    from core.tools.gpu import (
-        ImageEditing,
-        InstructPix2Pix,
-        Text2Image,
-        VisualQuestionAnswering,
-    )
-
-    if torch.cuda.is_available():
-        toolsets.extend(
-            [
-                Text2Image("cuda"),
-                ImageEditing("cuda"),
-                InstructPix2Pix("cuda"),
-                VisualQuestionAnswering("cuda"),
-            ]
-        )
-        handlers[FileType.IMAGE] = ImageCaptioning("cuda")
-
-agent_manager = AgentManager.create(toolsets=toolsets)
-file_handler = FileHandler(handlers=handlers)
-
-
-class Request(BaseModel):
-    key: str
-    query: str
+class ExecuteRequest(BaseModel):
+    session: str
+    prompt: str
     files: List[str]
 
 
-class Response(TypedDict):
-    response: str
+class ExecuteResponse(TypedDict):
+    answer: str
     files: List[str]
 
 
-@app.get("/")
-async def index():
-    return {"message": f"Hello World. I'm {settings['BOT_NAME']}."}
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
 
-@app.post("/command")
-async def command(request: Request) -> Response:
-    query = request.query
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard(request: Request):
+    return templates.TemplateResponse("dashboard.html", {"request": request})
+
+
+@app.post("/upload")
+async def create_upload_file(files: List[UploadFile]):
+    urls = []
+    for file in files:
+        extension = "." + file.filename.split(".")[-1]
+        with NamedTemporaryFile(suffix=extension) as tmp_file:
+            tmp_file.write(file.file.read())
+            tmp_file.flush()
+            urls.append(uploader.upload(tmp_file.name))
+    return {"urls": urls}
+
+
+@app.post("/api/execute")
+async def execute(request: ExecuteRequest) -> ExecuteResponse:
+    query = request.prompt
     files = request.files
-    session = request.key
+    session = request.session
 
-    executor = agent_manager.get_or_create_executor(session)
+    executor = agent_manager.create_executor(session)
 
     promptedQuery = "\n".join([file_handler.handle(file) for file in files])
     promptedQuery += query
@@ -89,15 +65,64 @@ async def command(request: Request) -> Response:
     try:
         res = executor({"input": promptedQuery})
     except Exception as e:
-        return {"response": str(e), "files": []}
+        return {"answer": str(e), "files": []}
 
-    files = re.findall("(image/\S*png)|(dataframe/\S*csv)", res["output"])
+    files = re.findall(r"\[file://\S*\]", res["output"])
+    files = [file[1:-1] for file in files]
 
     return {
-        "response": res["output"],
+        "answer": res["output"],
         "files": [uploader.upload(file) for file in files],
     }
 
 
+@app.post("/api/execute/async")
+async def execute_async(request: ExecuteRequest):
+    query = request.prompt
+    files = request.files
+    session = request.session
+
+    promptedQuery = "\n".join([file_handler.handle(file) for file in files])
+    promptedQuery += query
+
+    execution = task_execute.delay(session, promptedQuery)
+    return {"id": execution.id}
+
+
+@app.get("/api/execute/async/{execution_id}")
+async def execute_async(execution_id: str):
+    execution = get_task_result(execution_id)
+
+    result = {}
+    if execution.status == "SUCCESS" and execution.result:
+        output = execution.result.get("output", "")
+        files = re.findall(r"\[file://\S*\]", output)
+        files = [file[1:-1] for file in files]
+        result = {
+            "answer": output,
+            "files": [uploader.upload(file) for file in files],
+        }
+
+    return {
+        "status": execution.status,
+        "info": execution.info,
+        "result": result,
+    }
+
+
 def serve():
-    uvicorn.run("api.main:app", host="0.0.0.0", port=settings["PORT"])
+    p = Process(target=start_worker, args=[])
+    p.start()
+    uvicorn.run("api.main:app", host="0.0.0.0", port=settings["EVAL_PORT"])
+
+
+def dev():
+    p = Process(target=start_worker, args=[])
+    p.start()
+    uvicorn.run(
+        "api.main:app",
+        host="0.0.0.0",
+        port=settings["EVAL_PORT"],
+        reload=True,
+        reload_dirs=reload_dirs,
+    )

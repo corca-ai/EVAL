@@ -31,7 +31,6 @@ class Terminal(BaseToolSet):
             process = subprocess.Popen(
                 commands,
                 shell=True,
-                cwd=settings["PLAYGROUND_DIR"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
             )

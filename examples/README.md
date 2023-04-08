@@ -1,0 +1,7 @@
+1. Please develop and serve a simple web TODO app. The user can list all TODO items and add or delete each TODO item. I want it to have neumorphism-style. The ports you can use are 4500 and 6500.
+
+2. Please develop and serve a simple community web service. People can signup, login, post, comment. Post and comment should be visible at once. I want it to have neumorphism-style. The ports you can use are 4500 and 6500.
+
+3. Please make a web GUI for using HTTP API server. The name of it is EVAL. You can check the server code at ./main.py. The server is served on localhost:8000. Users should be able to write text input as 'query' and url array as 'files', and check the response. Users input form should be delivered in JSON format. I want it to have neumorphism-style. Serve it on port 4500.
+
+4. Please introduce yourself to the world in detail. What you're doing, what you can do, what you want to do. Please write all of this in a readable way at README.md. You must include user's input in INPUT.md except personal access token. After writing, you should create a repository, commit, and push it. username is eval-bot. user email is [no-reply@corca.ai](mailto:no-reply@corca.ai). personal access token is ghp-EXAMPLE1234.

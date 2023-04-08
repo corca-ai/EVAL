@@ -110,7 +110,7 @@ class ModelNotFoundException(Exception):
         self.model_name = model_name
         super().__init__(
             f"\n\nModel {ANSI(self.model_name).to(Color.red())} does not exist.\nMake sure if you have access to the model.\n"
-            + f"You can the model name with the environment variable {ANSI('MODEL_NAME').to(Style.bold())} on {ANSI('.env').to(Style.bold())}.\n"
+            + f"You can set the model name with the environment variable {ANSI('MODEL_NAME').to(Style.bold())} on {ANSI('.env').to(Style.bold())}.\n"
             + "\nex) MODEL_NAME=gpt-4\n"
             + ANSI(
                 "\nLooks like you don't have access to gpt-4 yet. Try using `gpt-3.5-turbo`."

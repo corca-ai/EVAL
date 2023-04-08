@@ -152,10 +152,10 @@ const submit = async () => {
     w.innerHTML = createActionCard(
       info.index,
       info.action,
-      escapeHtml(info.action_input),
+      escapeHtml(info.action_input || ""),
       info.what_i_did,
       info.plan,
-      escapeHtml(info.observation)
+      escapeHtml(info.observation || "")
     );
     actions.appendChild(w);
   };

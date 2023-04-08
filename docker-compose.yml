@@ -12,7 +12,7 @@ services:
       - ./playground/:/app/playground/
     ports:
       - "4500:4500"
-      - "7000:7000"
+      - "6500:6500"
       - "8000:8000" # eval port
     env_file:
       - .env
@@ -33,7 +33,7 @@ services:
       - ./playground/:/app/playground/
     ports:
       - "4500:4500"
-      - "7000:7000"
+      - "6500:6500"
       - "8000:8000" # eval port
     env_file:
       - .env

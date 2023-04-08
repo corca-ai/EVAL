@@ -1,4 +1,12 @@
 const $ = (selector) => document.querySelector(selector);
+const escapeHtml = (unsafe) => {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+};
 
 const setLoader = (isLoading) => {
   const button = $("#submit");
@@ -144,10 +152,10 @@ const submit = async () => {
     w.innerHTML = createActionCard(
       info.index,
       info.action,
-      info.action_input,
+      escapeHtml(info.action_input),
       info.what_i_did,
       info.plan,
-      info.observation
+      escapeHtml(info.observation)
     );
     actions.appendChild(w);
   };
@@ -210,7 +218,7 @@ const createActionCard = (
               action !== "Final Answer"
                 ? `<tr>
                   <th style="width: 100px">Input</th>
-                  <td><div>${input}</div></td>
+                  <td><div style="white-space: pre-wrap">${input}</div></td>
                 </tr>`
                 : ""
             }
@@ -264,7 +272,7 @@ const createActionCard = (
             <tbody>
               <tr>
                 <td>
-                  <div>${observation}</div>
+                  <div style="white-space: pre-wrap">${observation}</div>
                 </td>
               </tr>
             </tbody>

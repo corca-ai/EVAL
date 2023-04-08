@@ -1,6 +1,6 @@
-1. Please develop and serve a simple web TODO app. The user can list all TODO items and add or delete each TODO item. I want it to have neumorphism-style. The ports you can use are 4500 and 7000.
+1. Please develop and serve a simple web TODO app. The user can list all TODO items and add or delete each TODO item. I want it to have neumorphism-style. The ports you can use are 4500 and 6500.
 
-2. Please develop and serve a simple community web service. People can signup, login, post, comment. Post and comment should be visible at once. I want it to have neumorphism-style. The ports you can use are 4500 and 7000.
+2. Please develop and serve a simple community web service. People can signup, login, post, comment. Post and comment should be visible at once. I want it to have neumorphism-style. The ports you can use are 4500 and 6500.
 
 3. Please make a web GUI for using HTTP API server. The name of it is EVAL. You can check the server code at ./main.py. The server is served on localhost:8000. Users should be able to write text input as 'query' and url array as 'files', and check the response. Users input form should be delivered in JSON format. I want it to have neumorphism-style. Serve it on port 4500.
 

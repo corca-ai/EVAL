@@ -14,10 +14,11 @@ services:
       - "4500:4500"
       - "6500:6500"
       - "8000:8000" # eval port
+    environment:
+      - USE_GPU=False
+      - CELERY_BROKER_URL=redis://redis:6379
     env_file:
       - .env
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379
     depends_on:
       - redis
 
@@ -35,6 +36,9 @@ services:
       - "4500:4500"
       - "6500:6500"
       - "8000:8000" # eval port
+    environment:
+      - USE_GPU=True
+      - CELERY_BROKER_URL=redis://redis:6379
     env_file:
       - .env
     deploy:

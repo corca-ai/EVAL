@@ -74,13 +74,16 @@ class CodeEditor(BaseToolSet):
         name="CodeEditor.WRITE",
         description="Write code to create a new tool. "
         "If the code is completed, use the Terminal tool to execute it, if not, append the code through the CodeEditor.APPEND tool. "
-        "Input should be filename and code. This file must be in playground folder. "
-        "ex. test.py\nprint('hello world')\n "
-        "and the output will be last 3 lines.",
+        "Input should be formatted like: "
+        "<filename>\n<code>\n\n"
+        "Here is an example: "
+        "test.py\nmessage = 'hello world'\nprint(message)\n"
+        "\n"
+        "The output will be last 3 lines you wrote.",
     )
     def write(self, inputs: str) -> str:
         try:
-            code = CodeWriter.write(inputs)
+            code = CodeWriter.write(inputs.lstrip())
             output = "Last 3 line was:\n" + "\n".join(code.split("\n")[-3:])
         except Exception as e:
             output = str(e)

@@ -3,7 +3,7 @@ from core.tools.base import BaseToolSet
 from core.tools.factory import ToolsFactory
 from env import settings
 from langchain.chat_models.base import BaseChatModel
-from langchain.output_parsers.base import BaseOutputParser
+from langchain.schema import BaseOutputParser
 from langchain.callbacks.base import BaseCallbackManager
 
 from .chat_agent import ConversationalChatAgent

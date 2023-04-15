@@ -12,7 +12,7 @@ dev = "api.main:dev"
 [tool.poetry.dependencies]
 python = "^3.10"
 fastapi = "^0.94.1"
-langchain = "^0.0.115"
+langchain = "^0.0.139"
 diffusers = "^0.14.0"
 pydantic = "^1.10.6"
 tenacity = "^8.2.2"

@@ -1,7 +1,7 @@
 import re
 from typing import Dict
 
-from langchain.output_parsers.base import BaseOutputParser
+from langchain.schema import BaseOutputParser
 
 from core.prompts.input import EVAL_FORMAT_INSTRUCTIONS
 

@@ -10,4 +10,5 @@ dataframe/
 
 static/generated
 
-playground/
+playground/*
+!playground/example

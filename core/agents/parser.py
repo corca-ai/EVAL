@@ -17,7 +17,7 @@ class EvalOutputParser(BaseOutputParser):
         action = match.group(1).strip()
         plan = match.group(2)
         what_i_did = match.group(3)
-        action_input = match.group(4).strip(" ").strip('"')
+        action_input = match.group(4).strip(" ")
 
         return {
             "action": action,
